@@ -3,14 +3,14 @@
  */
 process.env.NODE_ENV = 'test';
 
-let chai = require('chai');
-let chaiHttp = require('chai-http');
-let app = require('../app');
-let should = chai.should();
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const app = require('../app');
+const should = chai.should();
 
-let moment = require('moment');
+const moment = require('moment');
 
-let importOpenExchangeRate = require('../bin/importOpenExchangeRate');
+const importOpenExchangeRate = require('../scripts/cron/importOpenExchangeRate');
 
 chai.use(chaiHttp);
 

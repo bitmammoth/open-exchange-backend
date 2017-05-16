@@ -1,15 +1,18 @@
-let express = require('express');
-let path = require('path');
-let favicon = require('serve-favicon');
-let logger = require('morgan');
-let cookieParser = require('cookie-parser');
-let bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+require('dotenv').config({
+  path: path.join(__dirname, 'config/.env')
+});
 
-let index = require('./routes/index');
-let users = require('./routes/users');
-let models = require('./models/');
+const index = require('./routes/index');
+const users = require('./routes/users');
+const models = require('./models/');
 
-let app = express();
+const app = express();
 
 // view engine setup
 // We do RESTFUL API
