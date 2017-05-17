@@ -6,6 +6,7 @@
     "start": "node ./scripts/server/www"
   },
   "dependencies": {
+    "aws-sdk": "^2.52.0",
     "body-parser": "~1.17.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",

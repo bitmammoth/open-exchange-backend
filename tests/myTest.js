@@ -45,5 +45,5 @@ describe('Test Open Exchange Rate API', ()=>{
 });
 
 function yesterday(){
-  return moment().subtract(1,'days');
+  return moment().subtract(1,'days').toDate();
 }
