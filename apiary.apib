@@ -1,80 +1,35 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://127.0.0.1:3000
 
-# Polls API
+# Currency exchange API
+Currency exchange is a simple API allowing user
+get exchagne rate between difference currency and day.
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+# Formatting
+Date format always YYYY-MM-DD (2017-12-01, 2017-07-31 ...etc.)
 
-## Questions Collection [/questions]
+## Exchange rate [/currency/exchange/{from}{?to}{?startDate}{?endDate}]
 
-### List All Questions [GET]
-
+### Exchange rate between currency in date [GET]
++ Parameters
+    + from (string, required) ... Base exchange currency
+    + to (string, required) ... Target exchange currency
+    + startDate(date, required) ... Start date of result
+    + endDate(date, required) ... End date of result (exclusive)
 + Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
-
-+ Request (application/json)
-
+        
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
-
-+ Response 201 (application/json)
-
-    + Headers
-
-            Location: /questions/2
-
-    + Body
-
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+            success: true,
+            response_timestamp: 1495304420703,
+            data: {
+                base: "USD",
+                from: "2016-12-31T16:00:00.000Z",
+                to: "2017-05-31T16:00:00.000Z",
+                rates: {
+                    "20170520": [{
+                        currency: "HKD",
+                        rate: "7.783309"
+                    }]
+                }
             }
+        }
