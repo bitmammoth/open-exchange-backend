@@ -34,6 +34,9 @@ function importOpenExchangeRate(importDate){
           },
           'RateDate':{
             'N':importDate.format('YYYYMMDD')
+          },
+          'RateBase':{
+            'S':repos.base
           }
         },
         TableName: 'ExchangeRates'
