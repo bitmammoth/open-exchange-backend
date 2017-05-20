@@ -10,12 +10,11 @@ require('dotenv').config({
 
 const index = require('./routes/index');
 const users = require('./routes/users');
-const models = require('./models/');
-
+const middleware = require('./middleware/');
 const app = express();
+const customResponse = middleware.customResponse;
 
 // view engine setup
-// We do RESTFUL API
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -25,6 +24,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(customResponse.json);
 
 app.use('/', index);
 app.use('/users', users);
@@ -44,7 +44,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  new models.Response(res).json(err);
+  res.jsonForFailureResponse(err);
 });
 
 module.exports = app;
