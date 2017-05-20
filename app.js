@@ -8,8 +8,7 @@ require('dotenv').config({
   path: path.join(__dirname, 'config/.env')
 });
 
-const index = require('./routes/index');
-const users = require('./routes/users');
+const routes = require('./routes');
 const middleware = require('./middleware/');
 const app = express();
 const customResponse = middleware.customResponse;
@@ -26,8 +25,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(customResponse.json);
 
-app.use('/', index);
-app.use('/users', users);
+//TODO: How to make better dummy api for test?
+app.use('^/$', (req,res)=>{
+  res.jsonForSuccessResponse({});
+});
+app.use('/currency', routes.currencyExchange);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
