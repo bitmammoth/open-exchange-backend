@@ -16,6 +16,7 @@ module.exports.json = (req,res,next)=>{
     responseJSON.status = error.status;
     responseJSON.code = error.code;
     responseJSON.message = error.message;
+    res.status(error.status || 500);
     return res.json(responseJSON);
   };
   next();

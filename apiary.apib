@@ -1,80 +1,170 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://127.0.0.1:3000
 
-# Polls API
+# Currency exchange API
+Currency exchange is a simple API allowing user
+get exchagne rate between difference currency and day.
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+# Formatting
+Date format always YYYY-MM-DD (2017-12-01, 2017-07-31 ...etc.)
 
-## Questions Collection [/questions]
+# Group Exchange Rate
 
-### List All Questions [GET]
+## Historical exchange rate [/currency/exchange/historical/{from}{?startDate}{?endDate}]
 
+### Historical exchange rate [GET]
++ Parameters
+    + from (string, required) ... Base exchange currency
+    + startDate(date, required) ... Start date of result
+    + endDate(date, required) ... End date of result (exclusive)
 + Response 200 (application/json)
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
-
-+ Request (application/json)
-
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            success: true,
+            response_timestamp: 1495304420703,
+            data: {
+                base: "USD",
+                from: "20161231",
+                to: "20170531",
+                rates: {
+                    "20170520": {
+                        "FJD": 2.087302,
+                        "MXN": 18.7159,
+                        "STD": 21864.049805,
+                        "SCR": 13.695,
+                        "CDF": 1417.5,
+                        "BBD": 2,
+                        "GTQ": 7.304677,
+                        "CLP": 668.5,
+                        "HNL": 23.288384,
+                        "UGX": 3610.75,
+                        "ZAR": 13.232635,
+                        "TND": 2.434496,
+                        "CUC": 1,
+                        "BSD": 1,
+                        "SLL": 7455,
+                        "SDG": 6.69,
+                        "IQD": 1163.4,
+                        "CUP": 25.5,
+                        "GMD": 46.1,
+                        "TWD": 30.006,
+                        ......
+                    }
+                }
+            }
         }
 
-+ Response 201 (application/json)
 
-    + Headers
+## Least exchange rate [/currency/exchange/least/{from}]
 
-            Location: /questions/2
+### Least exchange rate [GET]
++ Parameters
+    + from (string, required) ... Base exchange currency
++ Response 200 (application/json)
 
-    + Body
-
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
+        {
+            success: true,
+            response_timestamp: 1495304420703,
+            data: {
+                base: "USD",
+                from: "20161231",
+                to: "20170531",
+                rates: {
+                    "20170520": {
+                        "FJD": 2.087302,
+                        "MXN": 18.7159,
+                        "STD": 21864.049805,
+                        "SCR": 13.695,
+                        "CDF": 1417.5,
+                        "BBD": 2,
+                        "GTQ": 7.304677,
+                        "CLP": 668.5,
+                        "HNL": 23.288384,
+                        "UGX": 3610.75,
+                        "ZAR": 13.232635,
+                        "TND": 2.434496,
+                        "CUC": 1,
+                        "BSD": 1,
+                        "SLL": 7455,
+                        "SDG": 6.69,
+                        "IQD": 1163.4,
+                        "CUP": 25.5,
+                        "GMD": 46.1,
+                        "TWD": 30.006,
+                        ......
                     }
-                ]
+                }
             }
+        }
+
+
+# Group Convert currency amount
+## Convert currency with historical exchange rate [/currency/convert/historical/{from}/to/{to}{?amount}{?startDate}{?endDate}]
+
+### Historical amount [GET]
++ Parameters
+    + from (string, required) ... Base exchange currency
+    + to (string, required) ... Target currency to be converted
+    + startDate(date, required) ... Start date of result
+    + endDate(date, required) ... End date of result (exclusive)
+    + amount(number, required) ... Amount in base currency
++ Response 200 (application/json)
+
+        {
+            success: true,
+            response_timestamp: 1495304420703,
+            data: {
+                base: "USD",
+                targetCurrency: "HKD",
+                baseAmount: 300,
+                from: "20161231",
+                to: "20170531",
+                rates: {
+                    "20170501": 2333.5749,
+                    "20170502": 2334.3585000000003,
+                    "20170503": 2334.354,
+                    "20170504": 2334.813,
+                    "20170505": 2335.2,
+                    "20170506": 2335.2,
+                    "20170507": 2335.095,
+                    "20170508": 2335.4259,
+                    "20170509": 2335.245,
+                    "20170510": 2335.86,
+                    "20170511": 2336.8092,
+                    "20170512": 2338.098,
+                    "20170513": 2338.098,
+                    "20170514": 2338.0875,
+                    "20170515": 2336.0265,
+                    "20170516": 2336.217,
+                    "20170517": 2335.6965,
+                    "20170518": 2334.9516000000003,
+                    "20170519": 2334.9915,
+                    "20170520": 2334.9927,
+                    "20170521": 2335.005
+                }
+            }
+        }
+
+## Convert currency with least exchange rate [/currency/convert/least/{from}/to/{to}{?amount}]
+
+### Least amount [GET]
++ Parameters
+    + from (string, required) ... Base exchange currency
+    + to (string, required) ... Target currency to be converted
+    + amount(number, required) ... Amount in base currency
++ Response 200 (application/json)
+
+        {
+            success: true,
+            response_timestamp: 1495304420703,
+            data: {
+                base: "USD",
+                targetCurrency: "HKD",
+                baseAmount: 300,
+                from: "20161231",
+                to: "20170531",
+                rates: {
+                    "20170521": 2335.005
+                }
+            }
+        }

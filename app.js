@@ -4,17 +4,15 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-require('dotenv').config({
-  path: path.join(__dirname, 'config/.env')
-});
 
-const routes = require('./routes');
-const middleware = require('./middleware/');
+const config = require('./config');
+const controllers = require('./controller');
+const middleware = require('./middleware');
 const app = express();
 const customResponse = middleware.customResponse;
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('view', path.join(__dirname, 'view'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
@@ -29,7 +27,7 @@ app.use(customResponse.json);
 app.use('^/$', (req,res)=>{
   res.jsonForSuccessResponse({});
 });
-app.use('/currency', routes.currencyExchange);
+app.use('/currency', controllers.currencyExchange);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -43,9 +41,6 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
   res.jsonForFailureResponse(err);
 });
 
