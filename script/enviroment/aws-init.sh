@@ -1,5 +1,16 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 
+
+
+def main(){
+    createDynamoDBTable();
+}
+
+def createDynamoDBTable(){
+
+}
+
+if __name__ == "__main__":
 aws dynamodb create-table --table-name ExchangeRates \
 --attribute-definitions AttributeName=RateBase,AttributeType=S \
 AttributeName=RateDate,AttributeType=N \

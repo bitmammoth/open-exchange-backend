@@ -1,3 +1,5 @@
+"use strict";
+
 function getDefaultJSONResponseBody(isSuccessResponse) {
   return {
     success: isSuccessResponse,

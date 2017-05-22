@@ -1,6 +1,8 @@
 /**
  * Created by DavidNg on 15/5/2017.
  */
+"use strict";
+
 const moment = require('moment');
 const AWS = require('aws-sdk');
 const config = require('../../config');
@@ -28,7 +30,7 @@ function importOpenExchangeRateOfDate(importDate){
     rp.get({
       url: `https://openexchangerates.org/api/historical/${importDate.format('YYYY-MM-DD')}.json`,
       qs: {
-        app_id: config.OPEN_EXCHANGE_RATE_APP_ID
+        app_id: config.env.OPEN_EXCHANGE_RATE_APP_ID
       },
       json: true
     }).then((repos)=>{
@@ -88,7 +90,7 @@ function importOpenExchangeRateOfDate(importDate){
 
 function batchWriteDB(tableName,requestItems){
   let batchRequestItems = arrayChunk(requestItems,25);
-  batchWriteJobs = batchRequestItems.map((requestItems)=>{
+  let batchWriteJobs = batchRequestItems.map((requestItems)=>{
     let batchRequires = {};
     batchRequires[tableName] = requestItems;
     return batchWriteItemWillRetryUnprocessedItems(batchRequires);

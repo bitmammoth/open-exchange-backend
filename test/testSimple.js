@@ -1,6 +1,8 @@
 /**
  * Created by DavidNg on 15/5/2017.
  */
+"use strict";
+
 process.env.NODE_ENV = 'test';
 
 const chai = require('chai');
