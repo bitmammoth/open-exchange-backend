@@ -10,6 +10,7 @@ const apiGateway = new AWS.APIGateway();
 const DB_TABLE = 'ExchangeRates';
 const LAMBDA_FUNCTION = 'currencyExchangeBackend';
 const API_NAME = 'Currency exchange backend';
+const LAMBDA_SOURCE_CODE_PATH = 'lambda-codes/open-exchange-backend/openexchange-backend-v0.0.1.zip';
 
 Promise.resolve = Promise.resolve.bind(Promise);
 Promise.reject = Promise.reject.bind(Promise);
@@ -67,7 +68,7 @@ function initLambda(){
     return lambda.createFunction({
       Code: {
         S3Bucket: 'dng-dev-resources',
-        S3Key: 'lambda-codes/open-exchange-backend/openexchange-backend-v0.0.0.zip'
+        S3Key: LAMBDA_SOURCE_CODE_PATH 
       },
       FunctionName: 'currencyExchangeBackend',
       Handler: 'lambda.handler',
