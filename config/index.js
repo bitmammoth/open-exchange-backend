@@ -12,10 +12,11 @@ const AWS = require('aws-sdk');
 
 AWS.config.update({region: process.env.AWS_REGION});
 
-module.exports = {
+module.exports = Object.freeze({
   env: {
-    "OPEN_EXCHANGE_RATE_APP_ID": process.env.OPEN_EXCHANGE_RATE_APP_ID,
-    "AWS_REGION": process.env.AWS_REGION,
-    "AWS_ACCOUNT": process.env.AWS_ACCOUNT
+    OPEN_EXCHANGE_RATE_APP_ID: process.env.OPEN_EXCHANGE_RATE_APP_ID,
+    AWS_REGION: process.env.AWS_REGION,
+    AWS_ACCOUNT: process.env.AWS_ACCOUNT,
+    TZ: process.env.TZ
   }
-};
+});
