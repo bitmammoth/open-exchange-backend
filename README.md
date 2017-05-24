@@ -30,7 +30,8 @@ Noted that your aws account should have AdminAccess if you want automated init a
     2. /routes renamed to /controllers
 
 ## Development Practice 
-    
+
+    0. Follow and use eslint to write code
     1. Alway use single quote for string (Use 'string here' instand of "string here")
     2. Use promise as much as possible instand of callback
     3. Alway develop in strict mode by add "use strict" to beginning of JS file
