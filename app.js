@@ -11,6 +11,7 @@ const expressValidator = require('express-validator');
 require('./config');
 const controllers = require('./controller');
 const middleware = require('./middleware');
+const validator = require('./validator');
 const app = express();
 
 const customResponse = middleware.customResponse;
@@ -26,7 +27,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // According to model README it must immediately after bodyParser, https://github.com/ctavan/express-validator#installation
 // For available options you can check https://github.com/ctavan/express-validator#middleware-options
-app.use(expressValidator([]));
+app.use(expressValidator({
+  customValidators: validator
+}));
 app.use(cookieParser());
 app.use(customResponse.json);
 

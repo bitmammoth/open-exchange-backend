@@ -6,6 +6,13 @@
 
 -[Development Practice](#development-practice)
 
+-[Directory structure](#directory-structure)
+
+-[System Error code](#error-code)
+
+-[Reference](#reference)
+
+
 
 ## Installation
 
@@ -29,45 +36,59 @@ Noted that your aws account should have AdminAccess if you want automated init a
     1. /bin renamed to /scripts
     2. /routes renamed to /controllers
 
+## Directory structure
+    /config - Config file must placed here and read from program though index.js
+    /controllers - All API call entry point 
+    /error - Custom Error
+    /middleware - Custom Express middleware. 
+    /model - Date model for mapping Third party API response / DB record
+    /script - Script that can directly execute in base shell
+        /cron - Scheuled jobs
+        /enviroment - Enviroment setup
+        /server
+            www.js - Start node js server in localhost:300
+    /validator - Custom validators for validate argument value
+
 ## Development Practice 
 
-    0. Follow and use eslint to write code
-    1. Alway use single quote for string (Use 'string here' instand of "string here")
-    2. Use promise as much as possible instand of callback
-    3. Alway develop in strict mode by add "use strict" to beginning of JS file
-    4. Space after :, correct: {a: 2} , inorrect: {a:2} 
-    5. Function never more than 3 parameters
-    6. Never use boolean flag parameter
-    7. No useless comments
-    8. After deployment you must manually update script/enviroment/aws-init.js LAMBDA_SOURCE_CODE_PATH variable
-    9. Indention level and length of chain should less as much as possible, maximum level must less than 3 
-        Correct:
-            if (foo){
-              //Indention level 1
-            }
-            if (foo){
-              if (bar){
-                //Indention level 2
-              }
-            }
-            Promise(foo)
-              .then(bar) //Chain size is 1
-            Promise(foo)
-              .then(bar)
-              .then(foobar) //Chain size is 2
-        Incorrect:
-            if (foo){
-              if (bar){
-                if (foobar){
-                  //Indention level 3
-                }
-              }
-            }
-            Promise(foo)
-              .then(bar)
-              .then(foobar)
-              .then(foo) //Chain size is 3
-    10. Object key no quote unless necessary 
+* Follow and use eslint to write code
+* Use promise as much as possible instand of callback
+* Develop in strict mode by add "use strict" to beginning of JS file
+* Function never more than 3 parameters
+* Never use boolean flag parameter
+* No useless comments
+* After deployment you must manually update script/enviroment/aws-init.js LAMBDA_SOURCE_CODE_PATH variable
+* Indention level and length of chain should less as much as possible, maximum level must less than 3 
+```
+Correct:
+    if (foo){
+      //Indention level 1
+    }
+    if (foo){
+      if (bar){
+        //Indention level 2
+      }
+    }
+    Promise(foo)
+      .then(bar) //Chain size is 1
+    Promise(foo)
+      .then(bar)
+      .then(foobar) //Chain size is 2
+Incorrect:
+    if (foo){
+      if (bar){
+        if (foobar){
+          //Indention level 3
+        }
+      }
+    }
+    Promise(foo)
+      .then(bar)
+      .then(foobar)
+      .then(foo) //Chain size is 3
+```
+* Object key no quote unless necessary 
+```
         Correct:
           {
             a : 1,
@@ -78,12 +99,37 @@ Noted that your aws account should have AdminAccess if you want automated init a
             'a': 1,
             'b': 2
           }
-     11. Module import should follow that order: build-in, third-party, custom and between each type of module should have 1 empty line break
-        Correct:
-          require('path')
+```
+* Module import should follow that order: build-in, third-party, custom and between each type of module should have 1 empty line break
+```
+Correct:
+    require('path')
           
-          require('express')
+    require('express')
           
-          require('./app')
-          
-            
+    require('./app')
+```          
+
+* Module export is class than use upper in file name. 
+```
+Correct:
+    BaseError.js:
+        modules.export = class BaseError{}
+```
+
+* ')' in end of line should not more than 2.
+```
+Correct:
+    console.log(foo());
+Incorrect:
+    console.log(foo(bar()));
+```
+
+## Error code
+0 ~ 200 Validation Error 
+
+## Reference
+
+[Writing middleware for use in Express apps](https://expressjs.com/en/guide/writing-middleware.html)
+
+[Express validator middleware options check for customValidator example ](https://github.com/ctavan/express-validator#middleware-options)
