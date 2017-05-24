@@ -34,8 +34,9 @@ function importOpenExchangeRateOfDate(importDate){
       },
       json: true
     }).then((repos)=>{
+      let originalBaseCurrency = repos.base;
       let rates = repos.rates;
-      let currencies = Object.keys(rates);
+      let currencies = Object.keys(rates).filter((currency)=>currency!==originalBaseCurrency);
       let ratesOfDifferenceCurrency = currencies.map((targetCurrency)=>{
         let currenciesExcludeTargetCurrency = currencies.filter((currency)=>currency!==targetCurrency);
         let exchangeRateOfTargetCurrency = Number(rates[targetCurrency]);
@@ -50,7 +51,7 @@ function importOpenExchangeRateOfDate(importDate){
         };
       });
       ratesOfDifferenceCurrency.push({
-          base:repos.base,
+          base:originalBaseCurrency,
           rates:rates
         }
       );
