@@ -1,7 +1,7 @@
 /**
  * Created by ngkongchor on 21/5/2017.
  */
-"use strict";
+'use strict';
 
 const path = require('path');
 
@@ -17,6 +17,7 @@ module.exports = Object.freeze({
     OPEN_EXCHANGE_RATE_APP_ID: process.env.OPEN_EXCHANGE_RATE_APP_ID,
     AWS_REGION: process.env.AWS_REGION,
     AWS_ACCOUNT: process.env.AWS_ACCOUNT,
-    TZ: process.env.TZ
+    TZ: process.env.TZ,
+    NODE_ENV: process.env.NODE_ENV?process.env.NODE_ENV:'testing'
   }
 });

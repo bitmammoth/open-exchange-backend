@@ -1,9 +1,12 @@
 'use strict';
-
 /**
- * Created by davidng on 5/25/17.
+ * @module Error
  */
 
+/**
+ * Base class for acknowledge system error
+ * @class BaseError
+ * */
 module.exports = class BaseError extends Error {
   set status (status) {
     this._status = status;

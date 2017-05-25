@@ -7,7 +7,12 @@ module.exports = {
   'rules': {
     semi: ['error', 'always'],
     quotes: ['error', 'single'],
-    "handle-callback-err":'off'
+    "handle-callback-err": 'off',
+    "valid-jsdoc": ['error',{
+      requireReturnDescription: false,
+      requireParamDescription: false,
+      requireReturn: false
+    }]
   },
   'env':{
     node: true,

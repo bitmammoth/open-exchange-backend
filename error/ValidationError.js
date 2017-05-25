@@ -1,13 +1,16 @@
 'use strict';
-
 /**
- * Created by davidng on 5/25/17.
+ * @module Error
  */
+
 const util = require('util');
 
-const BaseRrror = require('./BaseError');
+const BaseError = require('./BaseError');
 
-module.exports = class ValidationError extends BaseRrror {
+/**
+ * @class ValidationError
+ * */
+module.exports = class ValidationError extends BaseError {
   constructor (validateErrors) {
     super(util.inspect(validateErrors));
     this.code = 0;
@@ -17,4 +20,5 @@ module.exports = class ValidationError extends BaseRrror {
   set code (code) {
     this._code = code + 0;
   }
+
 };

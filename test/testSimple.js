@@ -58,7 +58,6 @@ describe('Testing Currency API', () => {
         done();
       });
   });
-
   it('Should error due to endDate <= StartDate', (done) => {
     chai.request(app).get('/currency/exchange/historical/USD')
       .query({
@@ -89,7 +88,7 @@ describe('Testing Currency API', () => {
         done();
       });
   });
-  it('Should error due to incorrect date format', (done) => {
+  it('Should error due to incorrect date format in conversion API', (done) => {
     chai.request(app).get('/currency/convert/historical/USD/to/HKD')
       .query({
         amount: 10.0,

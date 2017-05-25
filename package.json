@@ -3,14 +3,17 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./scripts/server/www",
-    "test": "node_modules/.bin/mocha"
+    "start": "node ./script/server/www",
+    "test": "node_modules/.bin/nyc node_modules/.bin/mocha",
+    "jsdoc": "rm -rf ./jsdoc/ && ./node_modules/.bin/jsdoc -c conf.json"
   },
   "main": "lambda.js",
   "dependencies": {
     "aws-sdk": "^2.52.0",
     "aws-serverless-express": "^3.0.1",
     "body-parser": "~1.17.1",
+    "bunyan": "^1.8.10",
+    "co": "^4.6.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.3",
     "debug": "~2.6.3",
@@ -35,6 +38,8 @@
     "eslint-plugin-node": "^4.2.2",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "mocha": "^3.4.1"
+    "jsdoc": "^3.4.3",
+    "mocha": "^3.4.1",
+    "nyc": "^10.3.2"
   }
 }

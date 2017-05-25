@@ -2,7 +2,11 @@
 
 -[Installation](#installation)
 
+-[Default Configuration](#default-aws-configuration)
+
 -[Notable change comparing to template generate from express-generator](#notable-change)
+
+-[Environment options](#node_env-options)
 
 -[Development Practice](#development-practice)
 
@@ -24,12 +28,19 @@ Before installation please ensure your local machine has been install and config
 
 Noted that your aws account should have AdminAccess if you want automated init aws environment by script. 
 
+For better logging you may set NODE_ENV to development/debugging in environment variable
+
 ```
 1. npm install
-2. copy config/.env.example into config/.env and fill in the blank
+2. copy config/.env.example into config/.env and fill in the blank.
 3. execute script/enviroment/aws-init if you don't create AWS enviroment
 4. npm start
 5. You can access localhost:3000 
+```
+
+## Default aws configuration
+
+```
 ```
 
 ## Notable change
@@ -40,24 +51,44 @@ Noted that your aws account should have AdminAccess if you want automated init a
     /config - Config file must placed here and read from program though index.js
     /controllers - All API call entry point 
     /error - Custom Error
+    /helper - Helper function for sortcut/encystation third party usage/workflow control. Should not have any business logic here. 
     /middleware - Custom Express middleware. 
-    /model - Date model for mapping Third party API response / DB record
+    /model - Data model for mapping API response / DB record / Method Request
+        /db - Mapping to Dyanmo DB record
     /script - Script that can directly execute in base shell
         /cron - Scheuled jobs
         /enviroment - Enviroment setup
         /server
-            www.js - Start node js server in localhost:300
-    /validator - Custom validators for validate argument value
+            www.js - Start node js server in localhost:3000
+    /service - Logic for controller such as access db, invoke third party API ..etc.
+
+## NODE_ENV options
+1. debugging
+2. testing
+3. development
+4. production
 
 ## Development Practice 
 
+**Coding style guideline** 
 * Follow and use eslint to write code
-* Use promise as much as possible instand of callback
 * Develop in strict mode by add "use strict" to beginning of JS file
+* Inherits NotableError if you want error will logged into log file.
 * Function never more than 3 parameters
+* Line of function should less than 20
+* Use promise as much as possible instand of callback
 * Never use boolean flag parameter
+* Optional/Object parameter should be avoid
 * No useless comments
-* After deployment you must manually update script/enviroment/aws-init.js LAMBDA_SOURCE_CODE_PATH variable
+```
+    Example useless comments:
+    /**
+    * Will return a+b 
+    */
+    function aAddb(a,b){
+      return a+b;
+    }
+```
 * Indention level and length of chain should less as much as possible, maximum level must less than 3 
 ```
 Correct:
@@ -124,6 +155,11 @@ Correct:
 Incorrect:
     console.log(foo(bar()));
 ```
+
+**Deployment guideline**
+
+* After deployment you must manually update script/enviroment/aws-init.js S3_LAMBDA_SOURCE_CODE_PATH variable
+
 
 ## Error code
 0 ~ 200 Validation Error 

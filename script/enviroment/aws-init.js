@@ -159,6 +159,12 @@ function constructExpressLambda(){
       MemorySize: 256,
       Publish: true,
       Timeout: 60,
+      Environment: {
+        Variables: {
+          TZ: config.env.TZ,
+          NODE_ENV: 'production'
+        }
+      }
     }).promise();
   });
 }
@@ -286,18 +292,18 @@ function constructAPIGateWay(){
           }
         }).promise().then(()=>{return Promise.resolve(data)});
       })
-      .then((data)=>{
-        //Enable APIGateway tester by allow tester invoke lambda
+      .then((data) => {
+        // Enable APIGateway tester by allow tester invoke lambda
         return lambda.addPermission({
           Action: 'lambda:InvokeFunction',
           FunctionName: LAMBDA_SERVERLESS_EXPRESS_FUNCTION_NAME,
           Principal: 'apigateway.amazonaws.com',
           SourceArn: `arn:aws:execute-api:${config.env.AWS_REGION}:${config.env.AWS_ACCOUNT}:${data.restApiId}/*/*/*`,
           StatementId: `apt-gateway-${data.restApiId}-lambda-integration-test`
-        }).promise().then(()=>{return Promise.resolve(data)})
+        }).promise().then(()=>{return Promise.resolve(data);});
       })
-      .then((data)=>{
-        //Deploy apigateway to stage test.
+      .then((data) => {
+        // Deploy apigateway to stage test.
         return apigateway.createDeployment({
           restApiId: data.restApiId,
           description: 'Initialize deployment',
@@ -400,7 +406,8 @@ function constructCronJobLambda(){
       Timeout: 300,
       Environment:{
         Variables:{
-          TZ:process.env.TZ //Default
+          TZ: config.env.TZ,
+          NODE_ENV: 'production'
         }
       }
     }).promise()
