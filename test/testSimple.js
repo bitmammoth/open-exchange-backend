@@ -50,8 +50,20 @@ describe('Testing Currency API', () => {
   it('Should error due to incorrect date format', (done) => {
     chai.request(app).get('/currency/exchange/historical/USD')
       .query({
-        startDate: moment().subtract(10, 'days').format('MM/DD/YYYY'),
-        endDate: moment().format('MM/DD/YYYY')// exclusive, meaning startDate >= date > endDate
+        startDate: moment().subtract(10, 'days').format('MM-DD-YYYY'),
+        endDate: moment().format('MM-DD-YYYY')// exclusive, meaning startDate >= date > endDate
+      })
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it('Should error due to endDate <= StartDate', (done) => {
+    chai.request(app).get('/currency/exchange/historical/USD')
+      .query({
+        startDate: new Date().toISOString(), // exclusive, meaning startDate >= date > endDate
+        endDate: moment().subtract(10, 'days').toDate().toISOString()
       })
       .end((err, res) => {
         res.should.have.status(400);
@@ -81,8 +93,8 @@ describe('Testing Currency API', () => {
     chai.request(app).get('/currency/convert/historical/USD/to/HKD')
       .query({
         amount: 10.0,
-        startDate: moment().subtract(10, 'days').format('MM/DD/YYYY'),
-        endDate: moment().format('MM/DD/YYYY')
+        startDate: moment().subtract(10, 'days').format('MM-DD-YYYY'),
+        endDate: moment().format('MM-DD-YYYY')
       })
       .end((err, res) => {
         res.should.have.status(400);

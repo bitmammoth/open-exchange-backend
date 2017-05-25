@@ -61,8 +61,11 @@ router.get('/exchange/historical/:from', (req, res) => {
 function verifyHistoricalExchangeRateRequest(req, res) {
   //  https://github.com/chriso/validator.js Check for how to use
   req.checkParams('from', 'Missing base currency').notEmpty();
-  req.checkQuery('startDate', 'Start date mismatch YYYY-MM-DD format').notEmpty().isDate();
-  req.checkQuery('endDate', 'End date mismatch YYYY-MM-DD format').notEmpty().isDate();
+  req.checkQuery('startDate', 'Start date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
+  req.checkQuery('endDate', 'End date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
+  req.checkQuery('endDate', 'End date should after start date').isAfter(
+    req.body.startDate
+  );
   return req.getValidationResult().then((result) => {
     let requestInValidate = !result.isEmpty();
     if (requestInValidate) {
@@ -201,8 +204,11 @@ router.get('/convert/historical/:from/to/:to', (req, res) => {
 function verifyHistoricalConvertionRequest (req, res) {
   req.checkParams('from', 'Missing base currency').notEmpty();
   req.checkParams('to', 'Missing target currency').notEmpty();
-  req.checkQuery('startDate', 'Start date mismatch YYYY-MM-DD format').notEmpty().isDate();
-  req.checkQuery('endDate', 'End date mismatch YYYY-MM-DD format').notEmpty().isDate();
+  req.checkQuery('startDate', 'Start date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
+  req.checkQuery('endDate', 'End date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
+  req.checkQuery('endDate', 'End date should after start date').isAfter(
+    req.body.startDate
+  );
   req.checkQuery('amount', 'Missing amount in base currecny').notEmpty().isFloat();
 
   return req.getValidationResult().then((result) => {
