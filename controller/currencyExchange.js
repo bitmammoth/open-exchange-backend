@@ -2,8 +2,6 @@
  * Created by ngkongchor on 19/5/2017.
  */
 'use strict';
-const util = require('util');
-
 const express = require('express');
 const router = express.Router();
 
@@ -11,6 +9,7 @@ const moment = require('moment');
 const AWS = require('aws-sdk');
 
 const error = require('../error');
+const logger = require('../logger');
 
 AWS.config.update({region: process.env.AWS_REGION});
 
@@ -64,7 +63,7 @@ function verifyHistoricalExchangeRateRequest(req, res) {
   req.checkQuery('startDate', 'Start date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
   req.checkQuery('endDate', 'End date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
   req.checkQuery('endDate', 'End date should after start date').isAfter(
-    req.body.startDate
+    req.query.startDate
   );
   return req.getValidationResult().then((result) => {
     let requestInValidate = !result.isEmpty();
@@ -207,7 +206,7 @@ function verifyHistoricalConvertionRequest (req, res) {
   req.checkQuery('startDate', 'Start date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
   req.checkQuery('endDate', 'End date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
   req.checkQuery('endDate', 'End date should after start date').isAfter(
-    req.body.startDate
+    req.query.startDate
   );
   req.checkQuery('amount', 'Missing amount in base currecny').notEmpty().isFloat();
 
@@ -226,7 +225,7 @@ function verifyHistoricalConvertionRequest (req, res) {
 }
 
 router.get('/convert/least/:from/to/:to', (req, res) => {
-  verifyLeastConvertionRequest(req, res).then(()=>{
+  verifyLeastConvertionRequest(req, res).then(() => {
     let base = req.params.from;
     let targetCurrency = req.params.to;
     let baseCurrencyAmount = req.query.amount;
