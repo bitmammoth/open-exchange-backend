@@ -2,6 +2,47 @@
 /**
  * @module Helper
  */
+const error = require('../../error/index');
+const ValidationError = error.ValidationError;
+const NotableError = error.NotableError;
+
+class ValidationHelper {
+  /**
+   * Handle express-validator callback while input cannot pass validation should raise error.
+   * @static
+   * @function
+   * @name validationResolvedCallback
+   * @param {middlewareCallback} callback
+   * @return {expressValidatorResolvedCallbackHandler}
+   */
+  static validationResolvedCallback (callback) {
+    return (result) => {
+      let requestInValidate = !result.isEmpty();
+      if (requestInValidate) {
+        callback(
+          new ValidationError(result.array())
+        );
+        return;
+      }
+      callback();
+    };
+  };
+  /**
+   * Handle express-validator callback while input cannot pass validation should raise error.
+   * @static
+   * @function
+   * @name validationResolvedCallback
+   * @param {middlewareCallback} callback
+   * @return {expressValidatorResolvedCallbackHandler}
+   */
+  static validationRejectedCallback (callback) {
+    return (error) => {
+      callback(NotableError.fromNativeError(error));
+    };
+  };
+}
+
+module.exports.ValidationHelper = ValidationHelper;
 
 /**
  * Callback signature same as express middleware 'next' params
@@ -26,40 +67,3 @@
  * @callback expressValidatorRejectedCallbackHandler
  * @param {Error} result - Result of validation
  * */
-
-const error = require('../../error/index');
-const ValidationError = error.ValidationError;
-const NotableError = error.NotableError;
-
-/**
- * Handle express-validator callback while input cannot pass validation should raise error.
- * @function
- * @name validationResolvedCallback
- * @param {middlewareCallback} callback
- * @return {expressValidatorResolvedCallbackHandler}
- */
-module.exports.validationResolvedCallback = (callback) => {
-  return (result) => {
-    let requestInValidate = !result.isEmpty();
-    if (requestInValidate) {
-      callback(
-        new ValidationError(result.array())
-      );
-      return;
-    }
-    callback();
-  };
-};
-
-/**
- * Handle express-validator callback while module internal error.
- * @function
- * @name validationRejectedCallback
- * @param {middlewareCallback} callback
- * @return {expressValidatorRejectedCallbackHandler}
- */
-module.exports.validationRejectedCallback = (callback) => {
-  return (error) => {
-    callback(NotableError.fromNativeError(error));
-  };
-};

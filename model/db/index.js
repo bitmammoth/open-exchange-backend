@@ -4,36 +4,7 @@
  * @module Model
  */
 
-/**
- * @typedef DynamoDBResponse
- * @type {Object}
- * @property {Array<DynamoDBItem>} Items
- * @see {@link http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#query-property} for full response structure
- * */
-/**
- * @typedef DynamoDBItem
- * @type {Object}
- * @property {DynamoDBNumber} RateDate
- * @property {DynamoDBString} RateBase
- * @property {Object} Rates - An Object that using 3 little currency as key and value is {DynamoDBNumber}
- * */
-/**
- * @typedef DynamoDBString
- * @type {Object}
- * @property {Object} S
- * */
-/**
- * @typedef DynamoDBMap
- * @type {Object}
- * @property {Object} M
- * */
-/**
- * @typedef DynamoDBNumber
- * @type {Object}
- * @property {Object} N
- * */
-
-const moment = require('moment');
+const DateHelper = require('../../helper/date');
 
 /**
  * @class
@@ -41,11 +12,11 @@ const moment = require('moment');
 class ConversionRate {
   /**
    * @constructor
-   * @param {ExchangeRateCollection} exchangeRateCollection
+   * @param {ExchangeRate} exchangeRateCollection
    * */
   constructor (exchangeRateCollection) {
     /**
-     * @type ExchangeRateCollection
+     * @type ExchangeRate
      * */
     this.exchangeRateCollection = exchangeRateCollection;
     this.minDate = this.exchangeRateCollection.minDate;
@@ -58,7 +29,7 @@ class ConversionRate {
   multiply (value) { // Will cause one more loop for array
     for (let date of this.exchangeRateCollection.allDate) {
       for (let currency of this.exchangeRateCollection.allCurrency) {
-        this.exchangeRateCollection._serizeledExchangeRates[date][currency] = this.exchangeRateCollection._serizeledExchangeRates[date][currency] * value;
+        this.exchangeRateCollection.push(date, currency, this.exchangeRateCollection.rateForDate(date, currency) * value);
       }
     }
     return this;
@@ -70,34 +41,20 @@ class ConversionRate {
    * @return {ConversionRate} ConversionRate
    * */
   filterCurrency (currency) {
-    let rateCollection = new ExchangeRateCollection();
-    rateCollection.registerCurrency(currency);
-    for (let date of this.exchangeRateCollection.allDate) {
-      rateCollection._serizeledExchangeRates[date] = {};
-      let dateObj = moment(date, 'YYYYMMDD');
-      let rate = this.exchangeRateCollection._serizeledExchangeRates[date][currency];
-      if (rate) {
-        rateCollection.push(dateObj.format('YYYYMMDD'), currency, rate);
-        rateCollection.updateMinDate(dateObj);
-        rateCollection.updateMaxDate(dateObj);
-        rateCollection.registerDate(date);
-      }
-    }
-    return new ConversionRate(rateCollection);
+    this.exchangeRateCollection = this.exchangeRateCollection.filterByCurrency(currency);
+    return this;
   }
 
   serialize () {
-    let result = {};
     let currency = Array.from(this.exchangeRateCollection.allCurrency).pop();
-    for (let date of this.exchangeRateCollection.allDate) {
-      result[date] = this.exchangeRateCollection._serizeledExchangeRates[date][currency];
-    }
-    return result;
+    return this.exchangeRateCollection.serializeByCurrency(
+      currency
+    );
   }
 
   /**
    * @static
-   * @param {ExchangeRateCollection} exchangeRateCollection
+   * @param {ExchangeRate} exchangeRateCollection
    * @param {String} targetCurrency
    * @return {ConversionRate}
    * */
@@ -106,37 +63,23 @@ class ConversionRate {
   }
 }
 /**
- * @class ExchangeRateCollection
+ * @class
  * */
-class ExchangeRateCollection {
+class ExchangeRate {
   /**
+   * Factory function for create exchagne rate that only one day.
    * @static
-   * @param {DynamoDBResponse} dynamoDBResponse - Record return from AWS SDK response.
-   * @return {ExchangeRateCollection}
+   * @param {String} baseCurrency - BaseCurrency
+   * @param {Moment} date - Date of that record
+   * @return {ExchangeRate}
    * */
-  static fromDynamoDB (dynamoDBResponse) { // TODO: function violate SRP. for transfer between model and third party structure should not place in model
-    let rateCollection = new ExchangeRateCollection();
-    let items = dynamoDBResponse.Items;
-    for (let dailyExchangeRate of items) {
-      let rates = dailyExchangeRate.Rates.M;
-      let dateInt = dailyExchangeRate.RateDate.N;
-      let rateBase = dailyExchangeRate.RateBase.S;
-      let day = moment(dateInt, 'YYYYMMDD');
-      rateCollection.baseCurrency = rateBase;
-      rateCollection._serizeledExchangeRates[dateInt] = {};
-      for (let currency in rates) {
-        if (rates.hasOwnProperty(currency)) {
-          let currencyRateOfBase = rates[currency].N;
-          let rate = Number(currencyRateOfBase);
-          rateCollection.updateMinDate(day);
-          rateCollection.updateMaxDate(day);
-          rateCollection.registerDate(dateInt);
-          rateCollection.registerCurrency(currency);
-          rateCollection.push(dateInt, currency, rate);
-        }
-      }
-    }
-    return rateCollection;
+  static exchangeRateOfDay (baseCurrency, date) {
+    let exchangeRate = new ExchangeRate();
+    exchangeRate.baseCurrency = baseCurrency;
+    exchangeRate.updateMinDate(date);
+    exchangeRate.updateMaxDate(date);
+    exchangeRate.registerDate(DateHelper.dateToDateInt(date));
+    return exchangeRate;
   }
 
   constructor () {
@@ -156,23 +99,27 @@ class ExchangeRateCollection {
      * */
     this.allCurrency = new Set();
     /**
+     * Underlined data structure used to store exchange rate by date
      * @type Object
      * @default {}
      * */
     this._serizeledExchangeRates = {};
+    this._serizeledExchangeRates['date'] = {};
+    this._serizeledExchangeRates['currency'] = {};
+
     /**
      * Minimum date of exchangeRates
      * @type Moment
      * @default Moment
      * */
-    this.minDate = moment();
+    this.minDate = DateHelper.now();
 
     /**
      * Maximum date of exchangeRates
      * @type Moment
      * @default Moment
      * */
-    this.maxDate = moment();
+    this.maxDate = DateHelper.now();
   }
 
   /**
@@ -209,22 +156,66 @@ class ExchangeRateCollection {
     this.allCurrency.add(currency);
   }
 
+  /***
+   * @param {DateInt} date
+   * @param {String} currency
+   * @return {Number}
+   */
+  rateForDate (date, currency) {
+    return this._serizeledExchangeRates['date'][date][currency];
+  }
+
   /**
    * @param {Number|String} dateInt - YYYYMMDD format date
    * @param {String} currency
    * @param {Number} exchangeRate
    * */
   push (dateInt, currency, exchangeRate) {
-    this._serizeledExchangeRates[dateInt][currency] = exchangeRate;
+    if (!this._serizeledExchangeRates['date'][dateInt]) {
+      this._serizeledExchangeRates['date'][dateInt] = {};
+    }
+    if (!this._serizeledExchangeRates['currency'][currency]) {
+      this._serizeledExchangeRates['currency'][currency] = {};
+    }
+    this._serizeledExchangeRates['date'][dateInt][currency] = exchangeRate;
+    this._serizeledExchangeRates['currency'][currency][dateInt] = exchangeRate;
   }
 
   /**
+   * @param {String} currency
+   * @return {ExchangeRate}
+   * */
+  filterByCurrency (currency) {
+    let rateAfterFilter = new ExchangeRate();
+    let targetRates = this._serizeledExchangeRates['currency'][currency];
+    let allDates = Object.keys(targetRates).map(Number);
+    rateAfterFilter.allDate = new Set(allDates.map(String));
+    rateAfterFilter.allCurrency = new Set([currency]);
+    rateAfterFilter.minDate = DateHelper.dateIntToDate(Math.min(allDates));
+    rateAfterFilter.maxDate = DateHelper.dateIntToDate(Math.max(allDates));
+    for (let date of allDates) {
+      rateAfterFilter.push(date, currency, targetRates[date]);
+    }
+    return rateAfterFilter;
+  }
+
+  /**
+   * Daily exchange rate of currencies
    * @return {Object}
    * */
   serialize () {
-    return this._serizeledExchangeRates;
+    return this._serizeledExchangeRates['date'];
+  }
+
+  /**
+   * Daily exchange rate of currency
+   * @param {String} currency
+   * @return {Object}
+   * */
+  serializeByCurrency (currency) {
+    return this._serizeledExchangeRates['currency'][currency];
   }
 }
 
-module.exports.ExchangeRateCollection = ExchangeRateCollection;
+module.exports.ExchangeRate = ExchangeRate;
 module.exports.ConversionRate = ConversionRate;

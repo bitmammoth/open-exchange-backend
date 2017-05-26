@@ -3,8 +3,8 @@
  * @module Middleware
  */
 
-const logger = require('../logger');
-const errorModules = require('../error');
+const logger = require('../../logger');
+const errorModules = require('../../error');
 
 /**
  * @class CustomResponseMiddleWare

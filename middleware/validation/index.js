@@ -3,7 +3,7 @@
  * @module Middleware
  */
 
-const ValidationHelper = require('../../helper/validation');
+const ValidationHelper = require('../../helper/validation').ValidationHelper;
 
 /**
  * @class VerificationMiddleware

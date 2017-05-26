@@ -6,7 +6,9 @@ module.exports = {
   ],
   'rules': {
     semi: ['error', 'always'],
-    quotes: ['error', 'single'],
+    quotes: ['error', 'single', {
+      "avoidEscape": true
+    }],
     "handle-callback-err": 'off',
     "valid-jsdoc": ['error',{
       requireReturnDescription: false,

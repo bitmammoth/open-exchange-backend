@@ -52,15 +52,21 @@ For better logging you may set NODE_ENV to development/debugging in environment 
     /controllers - All API call entry point 
     /error - Custom Error
     /helper - Helper function for sortcut/encystation third party usage/workflow control. Should not have any business logic here. 
+    /logger 
     /middleware - Custom Express middleware. 
     /model - Data model for mapping API response / DB record / Method Request
         /db - Mapping to Dyanmo DB record
+        /service - Mapping for controller access 
     /script - Script that can directly execute in base shell
         /cron - Scheuled jobs
         /enviroment - Enviroment setup
         /server
             www.js - Start node js server in localhost:3000
     /service - Logic for controller such as access db, invoke third party API ..etc.
+        /exchangrate - API logic of exhcnage rate
+        /conversionrate - API logic of conversion rate
+        /thirdparty - Logic for commiucate to open-exchange-rate
+    /repository - Logic for commiucate between Appllication data and DB data
 
 ## NODE_ENV options
 1. debugging
@@ -72,20 +78,44 @@ For better logging you may set NODE_ENV to development/debugging in environment 
 
 **Coding style guideline** 
 * Follow and use eslint to write code
+* Code coverage target : 90% (Stmets)
 * Develop in strict mode by add "use strict" to beginning of JS file
 * Inherits NotableError if you want error will logged into log file.
 * Function never more than 3 parameters
 * Line of function should less than 20
+* Use static class instead of normal function if you know functions can grouping together
+* No more than one classes export from module
 * Use promise as much as possible instand of callback
 * Never use boolean flag parameter
 * Optional/Object parameter should be avoid
+* JSDoc typedef always bottom of document
+* Place thirdparty code under helper directory as much as possible
+* Hardcoded value should in config/index.js
+* If module only has exactly one Class just create index.js and export as default
+```Example:
+    /repository
+        /exchangerate
+            index.js - If exchangerate only contain one class/module then export in index.js:
+                class ExchangeRate {}
+                module.exports = ExchangeRate;
+   Example:
+    /repository
+        /exchangerate
+            ConversionRate.js
+            ExchangeRate.js
+            index.js - If exchangerate more than one Classes then in index.js:
+                const ConversionRate = require('./ConversionRate');
+                const ExchangeRate = require('./ExchangeRate');
+                module.exports.ExchangeRate = ExchangeRate;
+                module.exports.ConversionRate = ConversionRate;
+```
 * No useless comments
 ```
     Example useless comments:
     /**
     * Will return a+b 
     */
-    function aAddb(a,b){
+    function sum(a,b){
       return a+b;
     }
 ```

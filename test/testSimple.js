@@ -3,7 +3,7 @@
  */
 'use strict';
 
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'testing';
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -128,7 +128,6 @@ describe('Test Open Exchange Rate API', () => {
       moment().subtract(1, 'days').toDate()
     ).should.be.fulfilled;
   }).timeout(5 * 60 * 1000);// 5 mins
-
   it('Should import open exchange rate from passed 2 days to DB', () => {
     return importOpenExchangeRate.importOpenExchangeRateOfDateRange(
       moment().subtract(2, 'days').format('YYYY-MM-DD'),

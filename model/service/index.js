@@ -4,13 +4,6 @@
  * @module Model
  */
 
-/**
- * @typedef ISO8601DateString
- * @type {String}
- * @description YYYY-MM-DDTHH:mm:ss.sssZ
- * @see {@link https://en.wikipedia.org/wiki/ISO_8601}
- * */
-
 const moment = require('moment');
 
 /**
@@ -40,7 +33,7 @@ class ExchangeRateRequest {
    * @param {ISO8601DateString} startDate
    * @return {ExchangeRateRequest}
    * */
-  startFrom (startDate){
+  startFrom (startDate) {
     this.startDate = moment(startDate);
     return this;
   }
@@ -49,7 +42,7 @@ class ExchangeRateRequest {
    * @param {ISO8601DateString} endDate
    * @return {ExchangeRateRequest}
    * */
-  endOf (endDate){
+  endOf (endDate) {
     this.endDate = moment(endDate);
     return this;
   }
@@ -71,7 +64,7 @@ class ConversionRateRequest {
    * @param {String} baseCurrency
    * @return {ConversionRateRequest}
    * */
-  static convertFrom (baseCurrency){
+  static convertFrom (baseCurrency) {
     return new ConversionRateRequest(baseCurrency);
   }
 
@@ -83,7 +76,7 @@ class ConversionRateRequest {
     /**
      * @type String
      * */
-    this.baseCurrency = baseCurrency;
+    this.from(baseCurrency);
     /**
      * @type String
      * */
@@ -155,8 +148,14 @@ class ConversionRateRequest {
       .startFrom(this.startDate)
       .endOf(this.endDate);
   }
-
 }
 
 module.exports.ExchangeRateRequest = ExchangeRateRequest;
 module.exports.ConversionRateRequest = ConversionRateRequest;
+
+/**
+ * @typedef ISO8601DateString
+ * @type {String}
+ * @description YYYY-MM-DDTHH:mm:ss.sssZ
+ * @see {@link https://en.wikipedia.org/wiki/ISO_8601}
+ * */

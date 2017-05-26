@@ -4,14 +4,17 @@
  * @namespace service
  * @module Service
  */
-const moment = require('moment');
-const AWS = require('aws-sdk');
+const config = require('../../config');
 
 const db = require('../../model/db');
+const functionHelper = require('../../helper/functional');
+const AWSHelper = require('../../helper/aws');
 
-const dynamodb = new AWS.DynamoDB();
-const ExchangeCollection = db.ExchangeRateCollection;
+const ExchangeRateRepository = require('../../repository/exchangerate');
+
 const ConversionRate = db.ConversionRate;
+const ArrayHelper = functionHelper.ArrayHelper;
+const PromiseHelper = functionHelper.PromiseHelper;
 
 /**
  * @class ExchangeRateService
@@ -20,17 +23,33 @@ class ExchangeRateService {
   /**
    *  @function
    *  @static
+   *  @param {Array<ExchangeRate>} exchangeRates
+   *  @return {Promise<ConversionRate>}
+   * */
+  static importExchangeRate (exchangeRates) {
+    let insertJobs = ArrayHelper.arrayChunk(exchangeRates, config.aws.DYNAMO_DB_WRITE_BATCH_LIMIT).map((exchangeRate) => {
+      let request = {};
+      request[config.aws.DYNAMO_DB_TABLE_NAME] = exchangeRate.map(ExchangeRateRepository.exchangeRateToDynamoDBPutRequest);
+      return AWSHelper.batchWriteItemWillRetryUnprocessedItems(request);
+    });
+    return PromiseHelper.seriesPromise(insertJobs);
+  }
+
+  /**
+   *  @function
+   *  @static
    *  @param {ConversionRateRequest} conversionRateRequest
    *  @return {Promise<ConversionRate>}
    * */
   static queryLeastConversionRateBaseOnCurrency (conversionRateRequest) {
     return ExchangeRateService.queryLeastExchangeRateBaseOnCurrency(conversionRateRequest.asExchangeRateRequest())
-      .then((rateCollection) => {
-        let conversionRate = ConversionRate.convertExchangeRateToTargetCurrency(rateCollection, conversionRateRequest.targetCurrency)
+      .then((rate) => {
+        let conversionRate = ConversionRate.convertExchangeRateToTargetCurrency(rate, conversionRateRequest.targetCurrency)
           .multiply(conversionRateRequest.amount);
         return Promise.resolve(conversionRate);
       });
   }
+
   /**
    *  @function
    *  @static
@@ -39,85 +58,34 @@ class ExchangeRateService {
    * */
   static queryConversionRateBaseOnCurrency (conversionRateRequest) {
     return ExchangeRateService.queryExchangeRateBaseOnCurrency(conversionRateRequest.asExchangeRateRequest())
-      .then((rateCollection) => {
-        let conversionRate = ConversionRate.convertExchangeRateToTargetCurrency(rateCollection, conversionRateRequest.targetCurrency)
-        .multiply(conversionRateRequest.amount);
+      .then((rate) => {
+        let conversionRate = ConversionRate.convertExchangeRateToTargetCurrency(rate, conversionRateRequest.targetCurrency)
+          .multiply(conversionRateRequest.amount);
         return Promise.resolve(conversionRate);
       });
   }
+
   /**
    *  @function
    *  @static
    *  @param {ExchangeRateRequest} exchangeRateRequest
-   *  @return {Promise<ExchangeCollection>}
+   *  @return {Promise<ExchangeRate>}
    * */
   static queryExchangeRateBaseOnCurrency (exchangeRateRequest) {
-    return dynamodb.query({
-      ExpressionAttributeValues: {
-        ':startDate': {
-          N: exchangeRateRequest.startDate.format('YYYYMMDD')
-        },
-        ':endDate': {
-          N: exchangeRateRequest.endDate.format('YYYYMMDD')
-        },
-        ':currencyBase': {
-          S: exchangeRateRequest.baseCurrency
-        }
-      },
-      KeyConditionExpression: 'RateBase = :currencyBase AND RateDate BETWEEN :startDate AND :endDate',
-      TableName: 'ExchangeRates'
-    }).promise().then((data) => {
-      let rateCollection = ExchangeCollection.fromDynamoDB(data);
-      return Promise.resolve(rateCollection);
-    });
+    return ExchangeRateRepository.historicalExchangeRate(
+      exchangeRateRequest.startDate, exchangeRateRequest.endDate, exchangeRateRequest.baseCurrency
+    );
   }
+
   /**
    *  @function
    *  @static
    *  @param {ExchangeRateRequest} exchangeRateRequest
-   *  @return {Promise<ExchangeCollection>}
+   *  @return {Promise<ExchangeRate>}
    * */
   static queryLeastExchangeRateBaseOnCurrency (exchangeRateRequest) {
-    return leastRateDate(exchangeRateRequest.baseCurrency).then((leastRateDate) => {
-      return dynamodb.query({
-        ExpressionAttributeValues: {
-          ':leastDate': {
-            N: leastRateDate.format('YYYYMMDD')
-          },
-          ':currencyBase': {
-            S: exchangeRateRequest.baseCurrency
-          }
-        },
-        KeyConditionExpression: 'RateBase = :currencyBase AND RateDate = :leastDate',
-        TableName: 'ExchangeRates'
-      })
-        .promise()
-        .then((data) => {
-          let rateCollection = ExchangeCollection.fromDynamoDB(data);
-          return Promise.resolve(rateCollection);
-        });
-    });
+    return ExchangeRateRepository.leastExchangeRate(exchangeRateRequest.baseCurrency);
   }
-};
-
-function leastRateDate (baseCurrency) { // Should i hardcoded yesterday instead of fetch from db?
-  return new Promise((resolve, reject) => {
-    dynamodb.query({
-      ExpressionAttributeValues: {
-        ':currencyBase': {
-          S: baseCurrency
-        }
-      },
-      KeyConditionExpression: 'RateBase = :currencyBase',
-      TableName: 'ExchangeRates',
-      ScanIndexForward: false, // Sort result descending by sort key,
-      Limit: 1 // Only first item is enough
-    })
-      .promise()
-      .then((data) => {
-        resolve(moment(data.Items[0].RateDate.N, 'YYYYMMDD'));
-      })
-      .catch(reject);
-  });
 }
+
 module.exports = ExchangeRateService;

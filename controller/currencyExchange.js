@@ -5,7 +5,7 @@ const router = express.Router();
 
 const VerificationMiddleware = require('../middleware/validation');
 const serviceModel = require('../model/service');
-const exchageService = require('../service/exchangerate');
+const ExchangeRateService = require('../service/exchangerate');
 
 const ExchangeRateRequest = serviceModel.ExchangeRateRequest;
 const ConversionRateRequest = serviceModel.ConversionRateRequest;
@@ -15,7 +15,7 @@ router.get('/exchange/historical/:from', VerificationMiddleware.verifyHistorical
   let exchangeRateRequest = ExchangeRateRequest.exchangeRateBaseOn(req.params.from)
     .startFrom(req.query.startDate)
     .endOf(req.query.endDate);
-  exchageService.queryExchangeRateBaseOnCurrency(exchangeRateRequest).then((rateCollection) => {
+  ExchangeRateService.queryExchangeRateBaseOnCurrency(exchangeRateRequest).then((rateCollection) => {
     res.jsonForSuccessResponse({
       base: exchangeRateRequest.baseCurrency,
       from: exchangeRateRequest.startDate.format('YYYYMMDD'),
@@ -27,7 +27,7 @@ router.get('/exchange/historical/:from', VerificationMiddleware.verifyHistorical
 
 router.get('/exchange/least/:from', VerificationMiddleware.verifyLeastExchangeRateRequest, (req, res) => {
   let exchangeRateRequest = ExchangeRateRequest.exchangeRateBaseOn(req.params.from);
-  exchageService.queryLeastExchangeRateBaseOnCurrency(exchangeRateRequest).then((rateCollection) => {
+  ExchangeRateService.queryLeastExchangeRateBaseOnCurrency(exchangeRateRequest).then((rateCollection) => {
     res.jsonForSuccessResponse({
       base: exchangeRateRequest.baseCurrency,
       from: rateCollection.minDate.format('YYYYMMDD'),
@@ -43,7 +43,7 @@ router.get('/convert/historical/:from/to/:to', VerificationMiddleware.verifyHist
     .startFrom(req.query.startDate)
     .endOf(req.query.endDate)
     .withAmount(req.query.amount);
-  exchageService.queryConversionRateBaseOnCurrency(conversionRequest).then((conversionRate) => {
+  ExchangeRateService.queryConversionRateBaseOnCurrency(conversionRequest).then((conversionRate) => {
     res.jsonForSuccessResponse({
       base: conversionRequest.baseCurrency,
       targetCurrency: conversionRequest.targetCurrency,
@@ -59,7 +59,7 @@ router.get('/convert/least/:from/to/:to', VerificationMiddleware.verifyLeastConv
   let conversionRequest = ConversionRateRequest.convertFrom(req.params.from)
     .target(req.params.to)
     .withAmount(req.query.amount);
-  exchageService.queryLeastConversionRateBaseOnCurrency(conversionRequest).then((conversionRate) => {
+  ExchangeRateService.queryLeastConversionRateBaseOnCurrency(conversionRequest).then((conversionRate) => {
     res.jsonForSuccessResponse({
       base: conversionRequest.baseCurrency,
       targetCurrency: conversionRequest.targetCurrency,
