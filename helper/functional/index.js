@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @module Helper
+ * @module FunctionalHelper
  */
 
 const ArrayHelper = require('./ArrayHelper');

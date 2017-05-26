@@ -1,17 +1,15 @@
 'use strict';
 
 /**
- * @module Helper
- */
-
-/**
  * @class
- * @memberOf module:Helper
+ * @memberOf module:FunctionalHelper
  * */
 class ArrayHelper {
   /**
    * Will chunk array to specific size
+   * @static
    * @function
+   * @memberOf module:FunctionalHelper
    * @example
    * let source = [1,2,3,4,5,6,7,8,9,10];
    * arrayChuck(source,2);

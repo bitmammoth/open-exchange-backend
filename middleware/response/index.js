@@ -1,6 +1,6 @@
 'use strict';
 /**
- * @module Middleware
+ * @module ResponseMiddleware
  */
 
 const logger = require('../../logger');
@@ -8,11 +8,14 @@ const errorModules = require('../../error');
 
 /**
  * @class CustomResponseMiddleWare
+ * @memberOf module:ResponseMiddleware
  * */
 class CustomResponseMiddleWare {
   /**
    * Will add jsonForSuccessResponse and jsonForFailureResponse function for response object
    * @static
+   * @function
+   * @memberOf module:ResponseMiddleware
    * @param {Object} req - HTTP request argument to the middleware function, called "req" by convention.
    * @param {Object} res - HTTP response argument to the middleware function, called "res" by convention.
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
@@ -50,6 +53,8 @@ class CustomResponseMiddleWare {
 
   /**
    * @static
+   * @function
+   * @memberOf module:ResponseMiddleware
    * @param {Error} error
    * @return {boolean}
    **/

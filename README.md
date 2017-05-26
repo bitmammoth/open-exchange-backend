@@ -69,10 +69,9 @@ For better logging you may set NODE_ENV to development/debugging in environment 
     /repository - Logic for commiucate between Appllication data and DB data
 
 ## NODE_ENV options
-1. debugging
-2. testing
-3. development
-4. production
+1. testing
+2. development
+3. production
 
 ## Development Practice 
 
@@ -188,7 +187,7 @@ Incorrect:
 
 **Deployment guideline**
 
-* After deployment you must manually update script/enviroment/aws-init.js S3_LAMBDA_SOURCE_CODE_PATH variable
+* After deployment you must manually update script/enviroment/constructAWS.js S3_LAMBDA_SOURCE_CODE_PATH variable
 
 
 ## Error code

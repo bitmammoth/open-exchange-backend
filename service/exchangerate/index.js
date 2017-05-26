@@ -1,8 +1,7 @@
 'use strict';
 
 /**
- * @namespace service
- * @module Service
+ * @module ExchangeRateService
  */
 const config = require('../../config');
 
@@ -18,11 +17,14 @@ const PromiseHelper = functionHelper.PromiseHelper;
 
 /**
  * @class ExchangeRateService
+ * @memberOf module:ExchangeRateService
  * */
 class ExchangeRateService {
   /**
    *  @function
    *  @static
+   *  @function
+   *  @memberOf module:ExchangeRateService
    *  @param {Array<ExchangeRate>} exchangeRates
    *  @return {Promise<ConversionRate>}
    * */
@@ -36,8 +38,9 @@ class ExchangeRateService {
   }
 
   /**
-   *  @function
    *  @static
+   *  @function
+   *  @memberOf module:ExchangeRateService
    *  @param {ConversionRateRequest} conversionRateRequest
    *  @return {Promise<ConversionRate>}
    * */
@@ -51,8 +54,9 @@ class ExchangeRateService {
   }
 
   /**
-   *  @function
    *  @static
+   *  @function
+   *  @memberOf module:ExchangeRateService
    *  @param {ConversionRateRequest} conversionRateRequest
    *  @return {Promise<ConversionRate>}
    * */
@@ -66,8 +70,9 @@ class ExchangeRateService {
   }
 
   /**
-   *  @function
    *  @static
+   *  @function
+   *  @memberOf module:ExchangeRateService
    *  @param {ExchangeRateRequest} exchangeRateRequest
    *  @return {Promise<ExchangeRate>}
    * */
@@ -78,8 +83,9 @@ class ExchangeRateService {
   }
 
   /**
-   *  @function
    *  @static
+   *  @function
+   *  @memberOf module:ExchangeRateService
    *  @param {ExchangeRateRequest} exchangeRateRequest
    *  @return {Promise<ExchangeRate>}
    * */

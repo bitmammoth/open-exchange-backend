@@ -15,8 +15,9 @@ const logger = require('../../logger');
  * */
 class OpenExchangeRateService {
   /**
-   * @function
    * @static
+   * @function
+   * @memberOf module:ThirdPartyIntegration
    * @param {Moment} importDate
    * @return {Promise<ExchangeRate>}
    * */

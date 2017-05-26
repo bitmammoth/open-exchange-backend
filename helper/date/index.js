@@ -1,19 +1,22 @@
 'use strict';
 
 /**
- * @module Helper
+ * @module DateHelper
  */
+
 const moment = require('moment');
 
 const config = require('../../config');
 /**
  * @class
- * @memberOf module:Helper
+ * @memberOf module:DateHelper
  * */
 class DateHelper {
   /**
    * Will convert dateInt to date
    * @static
+   * @function
+   * @memberOf module:DateHelper
    * @param {DateInt} dateInt
    * @return {Moment}
    * */
@@ -24,6 +27,8 @@ class DateHelper {
   /**
    * Will convert moment to dateint
    * @static
+   * @function
+   * @memberOf module:DateHelper
    * @param {Moment} date
    * @return {DateInt}
    * */
@@ -33,6 +38,8 @@ class DateHelper {
 
   /**
    * @static
+   * @function
+   * @memberOf module:DateHelper
    * @return {Moment}
    * */
   static now () {

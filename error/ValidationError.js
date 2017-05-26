@@ -1,7 +1,4 @@
 'use strict';
-/**
- * @module Error
- */
 
 const util = require('util');
 
@@ -9,6 +6,7 @@ const BaseError = require('./BaseError');
 
 /**
  * @class ValidationError
+ * @memberOf module:Error
  * */
 module.exports = class ValidationError extends BaseError {
   constructor (validateErrors) {

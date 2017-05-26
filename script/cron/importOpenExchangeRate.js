@@ -1,7 +1,6 @@
 'use strict';
 /**
- * @module CLI
- * @description Cron script for download and import openexchangerate daily execute.
+ * @module CronJob
  */
 
 const moment = require('moment');
@@ -15,6 +14,7 @@ const PromiseHelper = functionHelper.PromiseHelper;
 
 /**
  * @function
+ * @memberOf module:CronJob
  * @param {Moment} importStartDate
  * @param {Moment} importEndDate
  * @return {Promise<Array>} The result of jobs will be saved into callback data with array.
@@ -34,6 +34,7 @@ function importOpenExchangeRateOfDateRange (importStartDate, importEndDate) {
 
 /** Download and import exchange rate into DB
  * @function
+ * @memberOf module:CronJob
  * @param {Moment} importDate
  * @return {Promise} - DyanmoDB#batchWriteItem
  * @see {@link http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#batchWriteItem-property}

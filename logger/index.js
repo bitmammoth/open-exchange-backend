@@ -10,12 +10,8 @@ if (env === 'production') {
   logLevel = 'warn';
 }
 else if (env === 'development' || env === 'testing') {
-  logLevel = 'info';
-}
-else if (env === 'debugging') {
   logLevel = 'debug';
-}
-else {
+} else {
   logLevel = 'warn';
 }
 

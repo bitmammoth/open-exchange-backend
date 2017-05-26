@@ -1,18 +1,17 @@
 'use strict';
 
-/**
- * @module Helper
- */
 const co = require('co');
 
 /**
  * @class
- * @memberOf module:Helper
+ * @memberOf module:FunctionalHelper
  * */
 class PromiseHelper {
   /**
    * Will execute promise as series order
+   * @static
    * @function
+   * @memberOf module:FunctionalHelper
    * @example
    *  const co = require('co');
    *  let s = (wait,index) => {

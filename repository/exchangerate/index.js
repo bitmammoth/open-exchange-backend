@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @module Repository
+ * @module ExchangeRateRepository
  */
 const AWS = require('aws-sdk');
 
@@ -14,12 +14,13 @@ const dynamodb = new AWS.DynamoDB();
 
 /**
  * @class
- * @memberOf module:Repository
+ * @memberOf module:ExchangeRateRepository
  */
 class ExchangeRateRepository {
   /** Query exchange rate during given date range
    * @static
    * @function
+   * @memberOf module:ExchangeRateRepository
    * @param {Moment} startDate - Inclusive date
    * @param {Moment} endDate - Exclusive date
    * @param {String} baseCurrency
@@ -49,6 +50,7 @@ class ExchangeRateRepository {
   /** Query least updated exchange rate
    * @static
    * @function
+   * @memberOf module:ExchangeRateRepository
    * @param {String} baseCurrency - Inclusive date
    * @return {Promise<ExchangeRate>}
    * */
@@ -76,6 +78,9 @@ class ExchangeRateRepository {
 
   /**
    * Will return least updated date of currency rate
+   * @static
+   * @function
+   * @memberOf module:ExchangeRateRepository
    * @param {String} baseCurrency
    * @return {Promise<Moment>}
    * */
@@ -101,6 +106,8 @@ class ExchangeRateRepository {
   }
   /**
    * @static
+   * @function
+   * @memberOf module:ExchangeRateRepository
    * @param {Moment} importDate - Value should same as date you passed to openexchange in API call
    * @param {OpenExchangeAPIResponse} openExchangeAPIResponse - JSON return from open exchange rate API
    * @return {ExchangeRate}
@@ -125,6 +132,8 @@ class ExchangeRateRepository {
   }
   /**
    * @static
+   * @function
+   * @memberOf module:ExchangeRateRepository
    * @param {DynamoDBResponse} dynamoDBResponse - Record return from AWS SDK response.
    * @return {ExchangeRate}
    * */
@@ -154,6 +163,8 @@ class ExchangeRateRepository {
 
   /**
    * @static
+   * @function
+   * @memberOf module:ExchangeRateRepository
    * @param {ExchangeRate} exchangeRate - Record return from AWS SDK response.
    * @return {Array<DynamoDBPutRequest>}
    * */

@@ -1,17 +1,21 @@
 'use strict';
 /**
- * @module Helper
+ * @module ValidateHelper
  */
 const error = require('../../error/index');
 const ValidationError = error.ValidationError;
 const NotableError = error.NotableError;
 
+/**
+ * @class
+ * @memberOf module:ValidateHelper
+ */
 class ValidationHelper {
   /**
    * Handle express-validator callback while input cannot pass validation should raise error.
    * @static
    * @function
-   * @name validationResolvedCallback
+   * @memberOf module:ValidateHelper
    * @param {middlewareCallback} callback
    * @return {expressValidatorResolvedCallbackHandler}
    */
@@ -31,7 +35,7 @@ class ValidationHelper {
    * Handle express-validator callback while input cannot pass validation should raise error.
    * @static
    * @function
-   * @name validationResolvedCallback
+   * @memberOf module:ValidateHelper
    * @param {middlewareCallback} callback
    * @return {expressValidatorResolvedCallbackHandler}
    */

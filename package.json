@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./script/server/www",
-    "test": "node_modules/.bin/nyc node_modules/.bin/mocha",
+    "test": "node_modules/.bin/nyc --reporter=html --reporter=text node_modules/.bin/mocha",
     "jsdoc": "rm -rf ./jsdoc/ && ./node_modules/.bin/jsdoc -c conf.json"
   },
   "main": "lambda.js",

@@ -1,16 +1,19 @@
 'use strict';
 /**
- * @module Middleware
+ * @module VerificationMiddleware
  */
 
 const ValidationHelper = require('../../helper/validation').ValidationHelper;
 
 /**
  * @class VerificationMiddleware
+ * @memberOf module:VerificationMiddleware
  * */
 class VerificationMiddleware {
   /**
    * @static
+   * @function
+   * @memberOf module:VerificationMiddleware
    * @param {Object} req - HTTP request argument to the middleware function, called "req" by convention.
    * @param {Object} res - HTTP response argument to the middleware function, called "res" by convention.
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
@@ -29,6 +32,8 @@ class VerificationMiddleware {
 
   /**
    * @static
+   * @function
+   * @memberOf module:VerificationMiddleware
    * @param {Object} req - HTTP request argument to the middleware function, called "req" by convention.
    * @param {Object} res - HTTP response argument to the middleware function, called "res" by convention.
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
@@ -42,6 +47,8 @@ class VerificationMiddleware {
 
   /**
    * @static
+   * @function
+   * @memberOf module:VerificationMiddleware
    * @param {Object} req - HTTP request argument to the middleware function, called "req" by convention.
    * @param {Object} res - HTTP response argument to the middleware function, called "res" by convention.
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
@@ -62,6 +69,8 @@ class VerificationMiddleware {
 
   /**
    * @static
+   * @function
+   * @memberOf module:VerificationMiddleware
    * @param {Object} req - HTTP request argument to the middleware function, called "req" by convention.
    * @param {Object} res - HTTP response argument to the middleware function, called "res" by convention.
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.

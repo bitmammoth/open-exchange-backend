@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @module Helper
+ * @module AWSHelper
  */
 
 const AWS = require('aws-sdk');
@@ -17,6 +17,7 @@ class AWSHelper {
    * Wrapper function dynamodb.batchWriteItem. added auto retry unprocessedItems attribute
    * @static
    * @function
+   * @memberOf module:AWSHelper
    * @param {Array<Object>} requestItems - Array of items you want put to DynamoDB, size of array can't more than 25
    * @return {Promise}
    * @see {@link http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#batchWriteItem-property}
@@ -41,6 +42,7 @@ class AWSHelper {
   /**
    * @static
    * @function
+   * @memberOf module:AWSHelper
    * @param {Function} functionNeedIncludeRetry - AWS function will executed with infinite retry
    * @param {Number} [retryCount=0] - Number of attempt
    * @return {Promise}
@@ -78,6 +80,6 @@ class AWSHelper {
       });
     };
   }
-}
+};
 
 module.exports = AWSHelper;

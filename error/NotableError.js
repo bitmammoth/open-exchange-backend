@@ -1,19 +1,17 @@
 'use strict';
-/**
- * @module Error
- */
 
 const BaseError = require('./BaseError');
 
 /**
  * Sub class of that will appear in system log with error level
  * @class NotableError
+ * @memberOf module:Error
  * */
-module.exports = class NotableError extends BaseError {
+class NotableError extends BaseError {
   /**
    * Wrap native error to NotableError
-   * @function fromNativeError
    * @static
+   * @memberOf module:Error
    * @param {Error} error
    * @return {NotableError}
    * */
@@ -22,4 +20,6 @@ module.exports = class NotableError extends BaseError {
     notableError.message = error.message;
     return notableError;
   }
-};
+}
+
+module.exports = NotableError;

@@ -7,7 +7,7 @@ module.exports = {
   'rules': {
     semi: ['error', 'always'],
     quotes: ['error', 'single', {
-      "avoidEscape": true
+      'avoidEscape': true
     }],
     "handle-callback-err": 'off',
     "valid-jsdoc": ['error',{
