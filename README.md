@@ -191,7 +191,9 @@ Incorrect:
 
 
 ## Error code
-0 ~ 200 Validation Error 
+0 ~ 200 Validation Error - Meaning input value is not passed validator 
+201 AlreadyExistError - Meaning action can't be done beacuse resource asking to create is already exist
+
 
 ## Reference
 
