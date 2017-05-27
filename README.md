@@ -45,7 +45,7 @@ gem install apiaryio
 ```
 
 ## Default aws configuration
-
+How serverless application work
 ![Backend architecture](https://s3-ap-northeast-1.amazonaws.com/open-doc/open-exchange-backend/images/exchange-rate-challenge-backend-arch.jpg)
 
 Noticed that you will need create your own S3 bucket inorder to hold the lambda source code. for configuration see [Configurable](#configable-options)
@@ -131,8 +131,11 @@ aws: {
 ```
 
 ## Directory structure
-![Relationship between Controlerr, service and repository](https://s3-ap-northeast-1.amazonaws.com/open-doc/open-exchange-backend/images/package-relationship-backend.jpg)
-   
+**Relationship between controller, service and repository**
+![Relationship between controller, service and repository](https://s3-ap-northeast-1.amazonaws.com/open-doc/open-exchange-backend/images/package-relationship-backend.jpg)
+
+**Directory overview**
+
     /config - Config file must placed here and read from program though AWSHelper.js
     /controllers - All API call entry point 
     /error - Custom Error
@@ -282,6 +285,8 @@ Incorrect:
 * For create lambda deployment package see [Creating a Deployment Package (Node.js)](http://docs.aws.amazon.com/lambda/latest/dg/nodejs-create-deployment-pkg.html)
 
 ## Error code
+
+**Error architecture**
 ![Error architecture](https://s3-ap-northeast-1.amazonaws.com/open-doc/open-exchange-backend/images/errors-architecture-backend.jpg)
 
     0 ~ 200 Validation Error - Meaning input value is not passed validator 
@@ -304,3 +309,6 @@ Public API Doc: [apiry](https://s3-ap-northeast-1.amazonaws.com/open-doc/open-ex
 
 [Creating a Deployment Package (Node.js)](http://docs.aws.amazon.com/lambda/latest/dg/nodejs-create-deployment-pkg.html)
 
+[AWS serverless express JS](https://github.com/awslabs/aws-serverless-express#is-aws-serverless-right-for-my-app)
+
+[AWS serverless](https://aws.amazon.com/serverless/)
