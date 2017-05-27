@@ -1,4 +1,7 @@
 'use strict';
+const error = require('../../error');
+const logger = require('../../logger');
+const DBNoresultError = error.DBNoResultError;
 const DateHelper = require('../../helper/date');
 
 /**
@@ -62,6 +65,13 @@ class ExchangeRate {
      * @default Moment
      * */
     this.maxDate = DateHelper.now();
+
+    /**
+     * Base64 encoded string for get next page data if result form dynamodb is paginated it will has token value
+     * @type String
+     * @default undefined
+     * */
+    this.nextPageToken = undefined;
   }
 
   /**
@@ -129,7 +139,13 @@ class ExchangeRate {
    * */
   filterByCurrency (currency) {
     let rateAfterFilter = new ExchangeRate();
+    let targetCurrencyNotFound = !(currency in this._serizeledExchangeRates['currency']);
+    if (targetCurrencyNotFound) {
+      logger.error({rates: this._serizeledExchangeRates}, `${currency} not found!`);
+      throw new DBNoresultError();
+    }
     let targetRates = this._serizeledExchangeRates['currency'][currency];
+
     let allDates = Object.keys(targetRates).map(Number);
     rateAfterFilter.allDate = new Set(allDates.map(String));
     rateAfterFilter.allCurrency = new Set([currency]);

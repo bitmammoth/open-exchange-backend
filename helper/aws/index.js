@@ -29,11 +29,12 @@ class AWSHelper {
     return new Promise((resolve, reject) => {
       AWSHelper.awsAPIRetry(dynamodb.batchWriteItem.bind(dynamodb))(batchWriteParams).then((data) => {
         if (Object.keys(data.UnprocessedItems).length > 0) {
-          logger.error({item: data.UnprocessedItems}, 'Some item is unable submit to DynamoDB will retry until success');
+          logger.error({item: data.UnprocessedItems}, 'Some item is unable submit to DynamoDB and will retry until success');
           return AWSHelper.batchWriteItemWillRetryUnprocessedItems(data.UnprocessedItems)
             .then(resolve)
             .catch(reject);
         } else {
+          logger.debug('Success fully writing to Dynamo DB');
           resolve(data);
         }
       }).catch(reject);
@@ -59,7 +60,7 @@ class AWSHelper {
               retryAfterMS = err.retryDelay * 1000;
             }
             if (isErrorCanRetry) {
-              logger.error({err: err, refryAfter: retryAfterMS}, `AWS API call fail but it can retry after ${retryAfterMS / 1000.0}s`);
+              logger.debug({err: err, retryAfter: retryAfterMS}, `AWS API call fail but it can retry after ${retryAfterMS / 1000.0}s`);
               return new Promise((resolve, reject) => {
                 setTimeout(
                   () => {
@@ -73,7 +74,7 @@ class AWSHelper {
                 .then(resolve)
                 .catch(reject);
             } else {
-              logger.error({err: err});
+              logger.error({err: err}, 'AWS call meeting unrecoverable error');
               reject(err);
             }
           });

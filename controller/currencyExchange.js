@@ -10,7 +10,6 @@ const ExchangeRateService = require('../service/exchangerate');
 const ExchangeRateRequest = serviceModel.ExchangeRateRequest;
 const ConversionRateRequest = serviceModel.ConversionRateRequest;
 
-// TODO: All API missing pagination mechanism, should be implement before launch
 router.get('/exchange/historical/:from', VerificationMiddleware.verifyHistoricalExchangeRateRequest, (req, res) => {
   let exchangeRateRequest = ExchangeRateRequest.exchangeRateBaseOn(req.params.from)
     .startFrom(req.query.startDate)
@@ -20,7 +19,8 @@ router.get('/exchange/historical/:from', VerificationMiddleware.verifyHistorical
       base: exchangeRateRequest.baseCurrency,
       from: exchangeRateRequest.startDate.format('YYYYMMDD'),
       to: exchangeRateRequest.endDate.format('YYYYMMDD'),
-      rates: rateCollection.serialize()
+      rates: rateCollection.serialize(),
+      nextPageToken: rateCollection.nextPageToken
     });
   }).catch(res.jsonForFailureResponse);
 });
@@ -32,7 +32,8 @@ router.get('/exchange/least/:from', VerificationMiddleware.verifyLeastExchangeRa
       base: exchangeRateRequest.baseCurrency,
       from: rateCollection.minDate.format('YYYYMMDD'),
       to: rateCollection.maxDate.format('YYYYMMDD'),
-      rates: rateCollection.serialize()
+      rates: rateCollection.serialize(),
+      nextPageToken: rateCollection.nextPageToken
     });
   }).catch(res.jsonForFailureResponse);
 });
@@ -50,7 +51,8 @@ router.get('/convert/historical/:from/to/:to', VerificationMiddleware.verifyHist
       baseAmount: conversionRequest.amount,
       from: conversionRequest.startDate.format('YYYYMMDD'),
       to: conversionRequest.endDate.format('YYYYMMDD'),
-      rates: conversionRate.serialize()
+      rates: conversionRate.serialize(),
+      nextPageToken: conversionRate.nextPageToken
     });
   }).catch(res.jsonForFailureResponse);
 });
@@ -66,7 +68,8 @@ router.get('/convert/least/:from/to/:to', VerificationMiddleware.verifyLeastConv
       baseAmount: conversionRequest.amount,
       from: conversionRate.minDate.format('YYYYMMDD'),
       to: conversionRate.maxDate.format('YYYYMMDD'),
-      rates: conversionRate.serialize()
+      rates: conversionRate.serialize(),
+      nextPageToken: conversionRate.nextPageToken
     });
   }).catch(res.jsonForFailureResponse);
 });

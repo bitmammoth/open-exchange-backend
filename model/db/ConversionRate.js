@@ -6,6 +6,17 @@
  * */
 class ConversionRate {
   /**
+   * @static
+   * @function
+   * @memberOf module:DBModel
+   * @param {ExchangeRate} exchangeRateCollection
+   * @param {String} targetCurrency
+   * @return {ConversionRate}
+   * */
+  static convertExchangeRateToTargetCurrency (exchangeRateCollection, targetCurrency) {
+    return new ConversionRate(exchangeRateCollection).filterCurrency(targetCurrency);
+  }
+  /**
    * @constructor
    * @memberOf module:DBModel
    * @param {ExchangeRate} exchangeRateCollection
@@ -17,6 +28,7 @@ class ConversionRate {
     this.exchangeRateCollection = exchangeRateCollection;
     this.minDate = this.exchangeRateCollection.minDate;
     this.maxDate = this.exchangeRateCollection.maxDate;
+    this.nextPageToken = this.exchangeRateCollection.nextPageToken;
   }
   /**
    * Will multiply all exchange rate with value.
@@ -48,18 +60,6 @@ class ConversionRate {
     return this.exchangeRateCollection.serializeByCurrency(
       currency
     );
-  }
-
-  /**
-   * @static
-   * @function
-   * @memberOf module:DBModel
-   * @param {ExchangeRate} exchangeRateCollection
-   * @param {String} targetCurrency
-   * @return {ConversionRate}
-   * */
-  static convertExchangeRateToTargetCurrency (exchangeRateCollection, targetCurrency) {
-    return new ConversionRate(exchangeRateCollection).filterCurrency(targetCurrency);
   }
 }
 

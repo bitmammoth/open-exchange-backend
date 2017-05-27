@@ -8,9 +8,12 @@ const AWS = require('aws-sdk');
 const config = require('../../config');
 const DateHelper = require('../../helper/date');
 const dbModel = require('../../model/db');
+const error = require('../../error');
+const logger = require('../../logger');
 
 const ExchangeRate = dbModel.ExchangeRate;
 const dynamodb = new AWS.DynamoDB();
+const DBNoResultError = error.DBNoResultError;
 
 /**
  * @class
@@ -25,6 +28,7 @@ class ExchangeRateRepository {
    * @param {Moment} endDate - Exclusive date
    * @param {String} baseCurrency
    * @return {Promise<ExchangeRate>}
+   * @see {@link http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#query-property}
    * */
   static historicalExchangeRate (startDate, endDate, baseCurrency) {
     return dynamodb.query({
@@ -40,11 +44,50 @@ class ExchangeRateRepository {
         }
       },
       KeyConditionExpression: 'RateBase = :currencyBase AND RateDate BETWEEN :startDate AND :endDate',
-      TableName: config.aws.DYNAMO_DB_TABLE_NAME
+      TableName: config.aws.DYNAMO_DB_TABLE_NAME,
+      Limit: 1
     }).promise().then((data) => {
       let rateCollection = ExchangeRateRepository.exchangeRateFromDynamoDBResponse(data);
+      if (data.LastEvaluatedKey) {
+        logger.info({key: data.LastEvaluatedKey});
+        rateCollection.nextPageToken = Buffer.from(JSON.stringify(data.LastEvaluatedKey)).toString('base64');
+      }
       return Promise.resolve(rateCollection);
     });
+  }
+
+  /**
+   * @static
+   * @function
+   * @memberOf module:ExchangeRateRepository
+   * @param {DynamoDBResponse} dynamoDBResponse - Record return from AWS SDK response.
+   * @return {ExchangeRate}
+   * */
+  static exchangeRateFromDynamoDBResponse (dynamoDBResponse) {
+    let exchangeRate = new ExchangeRate();
+    let items = dynamoDBResponse.Items;
+    if (items.length === 0) {
+      throw new DBNoResultError();
+    }
+    for (let dailyExchangeRate of items) {
+      let rates = dailyExchangeRate.Rates.M;
+      let dateInt = dailyExchangeRate.RateDate.N;
+      let rateBase = dailyExchangeRate.RateBase.S;
+      let day = DateHelper.dateIntToDate(dateInt);
+      exchangeRate.baseCurrency = rateBase;
+      for (let currency in rates) {
+        if (rates.hasOwnProperty(currency)) {
+          let currencyRateOfBase = rates[currency].N;
+          let rate = Number(currencyRateOfBase);
+          exchangeRate.updateMinDate(day);
+          exchangeRate.updateMaxDate(day);
+          exchangeRate.registerDate(dateInt);
+          exchangeRate.registerCurrency(currency);
+          exchangeRate.push(dateInt, currency, rate);
+        }
+      }
+    }
+    return exchangeRate;
   }
 
   /** Query least updated exchange rate
@@ -66,11 +109,16 @@ class ExchangeRateRepository {
           }
         },
         KeyConditionExpression: 'RateBase = :currencyBase AND RateDate = :leastDate',
-        TableName: config.aws.DYNAMO_DB_TABLE_NAME
+        TableName: config.aws.DYNAMO_DB_TABLE_NAME,
+        Limit: 1
       })
         .promise()
         .then((data) => {
           let rateCollection = ExchangeRateRepository.exchangeRateFromDynamoDBResponse(data);
+          if (data.LastEvaluatedKey) {
+            logger.info({key: data.LastEvaluatedKey});
+            rateCollection.nextPageToken = Buffer.from(JSON.stringify(data.LastEvaluatedKey)).toString('base64');
+          }
           return Promise.resolve(rateCollection);
         });
     });
@@ -99,7 +147,12 @@ class ExchangeRateRepository {
       })
         .promise()
         .then((data) => {
-          resolve(DateHelper.dateIntToDate(data.Items[0].RateDate.N));
+          let dynamoDBItem = data.Items[0];
+          if (dynamoDBItem) {
+            resolve(DateHelper.dateIntToDate(dynamoDBItem.RateDate.N));
+          } else {
+            reject(new DBNoResultError());
+          }
         })
         .catch(reject);
     });
@@ -129,36 +182,6 @@ class ExchangeRateRepository {
       return exchangeRate;
     });
     return exchangeRateCollection;
-  }
-  /**
-   * @static
-   * @function
-   * @memberOf module:ExchangeRateRepository
-   * @param {DynamoDBResponse} dynamoDBResponse - Record return from AWS SDK response.
-   * @return {ExchangeRate}
-   * */
-  static exchangeRateFromDynamoDBResponse (dynamoDBResponse) {
-    let exchangeRate = new ExchangeRate();
-    let items = dynamoDBResponse.Items;
-    for (let dailyExchangeRate of items) {
-      let rates = dailyExchangeRate.Rates.M;
-      let dateInt = dailyExchangeRate.RateDate.N;
-      let rateBase = dailyExchangeRate.RateBase.S;
-      let day = DateHelper.dateIntToDate(dateInt);
-      exchangeRate.baseCurrency = rateBase;
-      for (let currency in rates) {
-        if (rates.hasOwnProperty(currency)) {
-          let currencyRateOfBase = rates[currency].N;
-          let rate = Number(currencyRateOfBase);
-          exchangeRate.updateMinDate(day);
-          exchangeRate.updateMaxDate(day);
-          exchangeRate.registerDate(dateInt);
-          exchangeRate.registerCurrency(currency);
-          exchangeRate.push(dateInt, currency, rate);
-        }
-      }
-    }
-    return exchangeRate;
   }
 
   /**

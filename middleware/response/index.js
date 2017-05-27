@@ -21,8 +21,8 @@ class CustomResponseMiddleWare {
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
    * */
   static json (req, res, next) {
-    res.jsonForSuccessResponse = CustomResponseMiddleWare.successResponse.bind(res);
-    res.jsonForFailureResponse = CustomResponseMiddleWare.failureResponse.bind(res);
+    res.jsonForSuccessResponse = CustomResponseMiddleWare.successResponse(req, res);
+    res.jsonForFailureResponse = CustomResponseMiddleWare.failureResponse(req, res);
     next();
   }
 
@@ -33,22 +33,26 @@ class CustomResponseMiddleWare {
     };
   }
 
-  static successResponse (body) {
-    let responseJSON = CustomResponseMiddleWare.defaultJSONResponse(true);
-    responseJSON.data = body;
-    return this.json(responseJSON);
+  static successResponse (req, res) {
+    return (body) => {
+      let responseJSON = CustomResponseMiddleWare.defaultJSONResponse(true);
+      responseJSON.data = body;
+      return res.json(responseJSON);
+    };
   }
 
-  static failureResponse (error) {
-    let responseJSON = CustomResponseMiddleWare.defaultJSONResponse(false);
-    responseJSON.status = error.status;
-    responseJSON.code = error.code;
-    responseJSON.message = error.message;
-    this.status(error.status || 500);
-    if (CustomResponseMiddleWare.shouldErrorLogToLogger(error)) {
-      logger.error({err: error});
-    }
-    return this.json(responseJSON);
+  static failureResponse (req, res) {
+    return (error) => {
+      let responseJSON = CustomResponseMiddleWare.defaultJSONResponse(false);
+      responseJSON.status = error.status;
+      responseJSON.code = error.code;
+      responseJSON.message = error.message;
+      res.status(error.status || 500);
+      if (CustomResponseMiddleWare.shouldErrorLogToLogger(error)) {
+        logger.error({req: req, err: error});
+      }
+      return res.json(responseJSON);
+    };
   }
 
   /**
