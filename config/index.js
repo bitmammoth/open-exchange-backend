@@ -12,18 +12,18 @@ const IAM_ROLE_NAME = 'intranet';
 
 module.exports = Object.freeze({
   env: {
-    OPEN_EXCHANGE_RATE_APP_ID: process.env.OPEN_EXCHANGE_RATE_APP_ID,
-    AWS_REGION: process.env.AWS_REGION,
-    AWS_ACCOUNT: process.env.AWS_ACCOUNT,
-    TZ: process.env.TZ,
-    NODE_ENV: process.env.NODE_ENV ? process.env.NODE_ENV : 'testing'
+    OPEN_EXCHANGE_RATE_APP_ID: process.env.OPEN_EXCHANGE_RATE_APP_ID, // openexchangerates.org APP ID
+    AWS_REGION: process.env.AWS_REGION, // AWS region you want to working to
+    AWS_ACCOUNT: process.env.AWS_ACCOUNT, // AWS Account ID, required if you generate AWS environment from script
+    TZ: process.env.TZ, // Timezone, SYSTEM default is UTC timezone you may chose your preferred timezone
+    NODE_ENV: process.env.NODE_ENV ? process.env.NODE_ENV : 'testing' // 'testing' will cause debug mode. Set it to production before deploy
   },
   format: {
-    DATEINT_FORMAT: 'YYYYMMDD',
-    INPUT_DATE_FROMAT: 'YYYY-MM-DD'
+    DATEINT_FORMAT: 'YYYYMMDD', // How to present date in integer format
+    INPUT_DATE_FROMAT: 'YYYY-MM-DD' // How to present date in string format (ISO8601 date format)
   },
   mock: {
-    DYNAMO_DB_TESTING_RESULT_SET_LIMIT: 1
+    DYNAMO_DB_TESTING_RESULT_SET_LIMIT: 1 // Testing mode dynamo db return record size.
   },
   aws: {
     DYNAMO_DB_TABLE_NAME: 'ExchangeRates',
