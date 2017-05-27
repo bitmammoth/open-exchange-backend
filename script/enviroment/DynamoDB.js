@@ -36,7 +36,7 @@ class DynamoDBConstruct {
    * @return {Promise}
    * */
   static constructDynamoDB () {
-    logger.info('Will create table on DynamoDB');
+    logger.info(`Will create table ${AWS_CONFIG.DYNAMO_DB_TABLE_NAME} on DynamoDB`);
     return dynamodb.createTable({
       AttributeDefinitions: [
         {
@@ -75,9 +75,8 @@ class DynamoDBConstruct {
    * */
   static shouldCreateDynamoDBTable () {
     return dynamodb.describeTable({
-        TableName: AWS_CONFIG.DYNAMO_DB_TABLE_NAME
-      }
-    ).promise()
+      TableName: AWS_CONFIG.DYNAMO_DB_TABLE_NAME
+    }).promise()
       .then(() => Promise.reject(new AlreadyExistError(`Dyanmo DB Table: ${AWS_CONFIG.DYNAMO_DB_TABLE_NAME} Already exist`)));
   }
 }

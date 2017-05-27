@@ -76,6 +76,7 @@ class APIGatewayBuilder {
    * @return {Promise}
    * */
   registerAPIGateWay () {
+    logger.info(`Will create ${AWS_CONFIG.API_GATEWAY_API_NAME} api`);
     return apigateway.createRestApi({
       name: AWS_CONFIG.API_GATEWAY_API_NAME,
       description: 'API for list least/historical exchange rate'
@@ -109,6 +110,7 @@ class APIGatewayBuilder {
    * @return {Promise}
    * */
   registerResource () {
+    logger.info(`Will create resource under ${AWS_CONFIG.API_GATEWAY_API_NAME} api`);
     return apigateway.createResource({
       restApiId: this.rootResource.restApiId,
       pathPart: '{proxy+}',
@@ -146,6 +148,7 @@ class APIGatewayBuilder {
    * @see {@link http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html}
    * */
   integrateProxyAPIAndLambda () {
+    logger.info(`Will integrate simple-proxy lambda function under ${AWS_CONFIG.API_GATEWAY_API_NAME} api / resource`);
     return apigateway.putIntegration({
       httpMethod: 'ANY',
       resourceId: this.rootResource.resourceId,
@@ -176,6 +179,7 @@ class APIGatewayBuilder {
    * @see {@link http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html}
    * */
   integrateCORS () {
+    logger.info(`Will enable CORS under ${AWS_CONFIG.API_GATEWAY_API_NAME} api / resource`);
     return apigateway.putIntegration({
       httpMethod: 'OPTIONS',
       resourceId: this.rootResource.resourceId,
@@ -236,6 +240,7 @@ class APIGatewayBuilder {
    * @return {Promise}
    * */
   deployToStaging () {
+    logger.info(`Will enable API ${AWS_CONFIG.API_GATEWAY_API_NAME}`);
     return apigateway.createDeployment({
       restApiId: this.rootResource.restApiId,
       description: 'Initialize deployment',

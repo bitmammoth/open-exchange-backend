@@ -137,6 +137,7 @@ class LambdaConstruct {
    * @static
    * @function
    * @memberOf module:AWSInfrastructure
+   * @param {String} lambdaFunctionName - Function need to check exist
    * @return {Promise}
    * */
   static shouldCreateLambda (lambdaFunctionName) {
@@ -150,6 +151,7 @@ class LambdaConstruct {
    * @static
    * @function
    * @memberOf module:AWSInfrastructure
+   * @param {String} restApiId - API Gateway API Id
    * @return {Promise}
    * */
   static allowExpressLambdaTriggerFromAPITester (restApiId) {
