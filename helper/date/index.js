@@ -45,6 +45,15 @@ class DateHelper {
   static now () {
     return moment();
   }
+
+  /**
+   * @static
+   * @function
+   * @return {DateInt}
+   */
+  static unixStartDateInt () {
+    return DateHelper.dateToDateInt(new Date(0));
+  }
 }
 
 module.exports = DateHelper;

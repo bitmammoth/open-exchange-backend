@@ -14,7 +14,7 @@ const functionHelper = require('../../helper/functional');
 const awsHelper = require('../../helper/aws');
 
 const dynamodb = new AWS.DynamoDB();
-const ExchangeRate = dbModel.ExchangeRate;
+const ExchangeRateCollectionBuilder = dbModel.ExchangeRateCollectionBuilder;
 const DBNoResultError = error.DBNoResultError;
 const ArrayHelper = functionHelper.ArrayHelper;
 const PromiseHelper = functionHelper.PromiseHelper;
@@ -50,7 +50,7 @@ class ExchangeRateRepository {
    * @return {Array<DynamoDBPutRequest>}
    * */
   static exchangeRateToDynamoDBPutRequest (exchangeRate) {
-    let rateDate = DateHelper.dateToDateInt(exchangeRate.minDate);
+    let rateDate = exchangeRate.minDate;
     let putRequest = {
       PutRequest: {
         Item: {
@@ -58,7 +58,7 @@ class ExchangeRateRepository {
             'M': {}
           },
           'RateDate': {
-            'N': rateDate
+            'N': String(rateDate)
           },
           'RateBase': {
             'S': exchangeRate.baseCurrency
@@ -122,7 +122,7 @@ class ExchangeRateRepository {
    * @return {ExchangeRate}
    * */
   static exchangeRateFromDynamoDBResponse (dynamoDBResponse) {
-    let exchangeRate = new ExchangeRate();
+    let exchangeRateBuilder = new ExchangeRateCollectionBuilder();
     let items = dynamoDBResponse.Items;
     if (items.length === 0) {
       throw new DBNoResultError();
@@ -130,21 +130,16 @@ class ExchangeRateRepository {
     for (let dailyExchangeRate of items) {
       let rates = dailyExchangeRate.Rates.M;
       let dateInt = dailyExchangeRate.RateDate.N;
-      let rateBase = dailyExchangeRate.RateBase.S;
-      let day = DateHelper.dateIntToDate(dateInt);
-      exchangeRate.baseCurrency = rateBase;
+      exchangeRateBuilder.baseCurrency = dailyExchangeRate.RateBase.S;
       for (let currency in rates) {
         if (rates.hasOwnProperty(currency)) {
           let currencyRateOfBase = rates[currency].N;
           let rate = Number(currencyRateOfBase);
-          exchangeRate.updateMinDate(day);
-          exchangeRate.updateMaxDate(day);
-          exchangeRate.registerDate(dateInt);
-          exchangeRate.registerCurrency(currency);
-          exchangeRate.push(dateInt, currency, rate);
+          exchangeRateBuilder.addExchangeRateRecord(dateInt, currency, rate);
         }
       }
     }
+    let exchangeRate = exchangeRateBuilder.build();
     if (dynamoDBResponse.LastEvaluatedKey) {
       logger.debug({key: dynamoDBResponse.LastEvaluatedKey}, 'Result has more item');
       exchangeRate.nextPageToken = DynamoDBHelper.pageTokenFromLastEvaluatedKey(dynamoDBResponse.LastEvaluatedKey);
@@ -232,19 +227,19 @@ class ExchangeRateRepository {
    * */
   static exchangeRateFromOpenExchangeAPIResponse (importDate, openExchangeAPIResponse) {
     let rates = openExchangeAPIResponse.rates;
-    let dateInt = DateHelper.dateToDateInt(importDate);
     let currencies = Object.keys(rates);
     let exchangeRateCollection;
     exchangeRateCollection = currencies.map((targetCurrency) => {
-      let exchangeRate = ExchangeRate.exchangeRateOfDay(targetCurrency, importDate);
+      let exchangeRateBuilder = new ExchangeRateCollectionBuilder(targetCurrency);
+      exchangeRateBuilder.registerDate(DateHelper.dateToDateInt(importDate));
       let currenciesExcludeTargetCurrency = currencies.filter((currency) => currency !== targetCurrency);
       let exchangeRateOfTargetCurrency = Number(rates[targetCurrency]);
-      exchangeRate.allCurrency = new Set(currenciesExcludeTargetCurrency);
+      exchangeRateBuilder.allCurrency = new Set(currenciesExcludeTargetCurrency);
       for (let currency of currenciesExcludeTargetCurrency) {
         let exchangeRateOfCurrency = Number(rates[currency]);
-        exchangeRate.push(dateInt, currency, exchangeRateOfCurrency / exchangeRateOfTargetCurrency);
+        exchangeRateBuilder.addExchangeRateRecordForCurrency(currency, exchangeRateOfCurrency / exchangeRateOfTargetCurrency);
       }
-      return exchangeRate;
+      return exchangeRateBuilder.build();
     });
     return exchangeRateCollection;
   }

@@ -3,11 +3,7 @@
 /**
  * @module ExchangeRateService
  */
-const db = require('../../model/db');
-
 const ExchangeRateRepository = require('../../repository/exchangerate');
-
-const ConversionRate = db.ConversionRate;
 
 /**
  * @class ExchangeRateService
@@ -34,8 +30,8 @@ class ExchangeRateService {
    * */
   static queryLeastConversionRateBaseOnCurrency (conversionRateRequest) {
     return ExchangeRateService.queryLeastExchangeRateBaseOnCurrency(conversionRateRequest.asExchangeRateRequest())
-      .then((rate) => {
-        let conversionRate = ConversionRate.convertExchangeRateToTargetCurrency(rate, conversionRateRequest.targetCurrency)
+      .then((exchangeRate) => {
+        let conversionRate = exchangeRate.filterByCurrency(conversionRateRequest.targetCurrency)
           .multiply(conversionRateRequest.amount);
         return Promise.resolve(conversionRate);
       });
@@ -50,8 +46,8 @@ class ExchangeRateService {
    * */
   static queryConversionRateBaseOnCurrency (conversionRateRequest) {
     return ExchangeRateService.queryExchangeRateBaseOnCurrency(conversionRateRequest.asExchangeRateRequest())
-      .then((rate) => {
-        let conversionRate = ConversionRate.convertExchangeRateToTargetCurrency(rate, conversionRateRequest.targetCurrency)
+      .then((exchangeRate) => {
+        let conversionRate = exchangeRate.filterByCurrency(conversionRateRequest.targetCurrency)
           .multiply(conversionRateRequest.amount);
         return Promise.resolve(conversionRate);
       });

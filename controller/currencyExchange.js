@@ -32,8 +32,8 @@ router.get('/exchange/least/:from', VerificationMiddleware.verifyLeastExchangeRa
   ExchangeRateService.queryLeastExchangeRateBaseOnCurrency(exchangeRateRequest).then((rateCollection) => {
     res.jsonForSuccessResponse({
       base: exchangeRateRequest.baseCurrency,
-      from: rateCollection.minDate.format('YYYYMMDD'),
-      to: rateCollection.maxDate.format('YYYYMMDD'),
+      from: rateCollection.minDate,
+      to: rateCollection.maxDat,
       rates: rateCollection.serialize(),
       next_page_token: rateCollection.nextPageToken
     });
@@ -54,7 +54,7 @@ router.get('/convert/historical/:from/to/:to', VerificationMiddleware.verifyHist
       baseAmount: conversionRequest.amount,
       from: conversionRequest.startDate.format('YYYYMMDD'),
       to: conversionRequest.endDate.format('YYYYMMDD'),
-      rates: conversionRate.serialize(),
+      rates: conversionRate.serializeByCurrency(conversionRequest.targetCurrency),
       next_page_token: conversionRate.nextPageToken
     });
   }).catch(res.jsonForFailureResponse);
@@ -70,9 +70,9 @@ router.get('/convert/least/:from/to/:to', VerificationMiddleware.verifyLeastConv
       base: conversionRequest.baseCurrency,
       targetCurrency: conversionRequest.targetCurrency,
       baseAmount: conversionRequest.amount,
-      from: conversionRate.minDate.format('YYYYMMDD'),
-      to: conversionRate.maxDate.format('YYYYMMDD'),
-      rates: conversionRate.serialize(),
+      from: conversionRate.minDate,
+      to: conversionRate.maxDate,
+      rates: conversionRate.serializeByCurrency(conversionRequest.targetCurrency),
       next_page_token: conversionRate.nextPageToken
     });
   }).catch(res.jsonForFailureResponse);
