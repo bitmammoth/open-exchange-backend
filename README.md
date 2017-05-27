@@ -54,7 +54,7 @@ gem install apiaryio
     2. /routes renamed to /controllers
 
 ## Directory structure
-    /config - Config file must placed here and read from program though index.js
+    /config - Config file must placed here and read from program though AWSHelper.js
     /controllers - All API call entry point 
     /error - Custom Error
     /helper - Helper function for sortcut/encystation third party usage/workflow control. Should not have any business logic here. 
@@ -95,14 +95,15 @@ gem install apiaryio
 * Use promise as much as possible instand of callback
 * Never use boolean flag parameter
 * Optional/Object parameter should be avoid
+* While module export is class. file name must be upper case
 * JSDoc typedef always bottom of document
 * Place thirdparty code under helper directory as much as possible
-* Hardcoded value should in config/index.js
-* If module only has exactly one Class just create index.js and export as default
+* Hardcoded value should in config/AWSHelper.js
+* If module only has exactly one Class just create AWSHelper.js and export as default
 ```Example:
     /repository
         /exchangerate
-            index.js - If exchangerate only contain one class/module then export in index.js:
+            AWSHelper.js - If exchangerate only contain one class/module then export in AWSHelper.js:
                 class ExchangeRate {}
                 module.exports = ExchangeRate;
    Example:
@@ -110,7 +111,7 @@ gem install apiaryio
         /exchangerate
             ConversionRate.js
             ExchangeRate.js
-            index.js - If exchangerate more than one Classes then in index.js:
+            AWSHelper.js - If exchangerate more than one Classes then in AWSHelper.js:
                 const ConversionRate = require('./ConversionRate');
                 const ExchangeRate = require('./ExchangeRate');
                 module.exports.ExchangeRate = ExchangeRate;

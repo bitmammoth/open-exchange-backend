@@ -1,7 +1,7 @@
 'use strict';
 
 const moment = require('moment');
-
+const DynamoDBHelper = require('../../helper/aws').DynamoDBHelper;
 /**
  * @class
  * @memberOf module:ServiceModel
@@ -54,9 +54,7 @@ class ExchangeRateRequest {
    * @return {ConversionRateRequest}
    * */
   withPageToken (pageToken) {
-    if (pageToken) {
-      this.pageToken = JSON.parse(Buffer.from(pageToken, 'base64').toString('ascii'));
-    }
+    this.pageToken = DynamoDBHelper.exclusiveStartKeyFromPageToken(pageToken);
     return this;
   }
 

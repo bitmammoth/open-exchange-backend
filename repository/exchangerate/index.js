@@ -10,16 +10,72 @@ const DateHelper = require('../../helper/date');
 const dbModel = require('../../model/db');
 const error = require('../../error');
 const logger = require('../../logger');
+const functionHelper = require('../../helper/functional');
+const awsHelper = require('../../helper/aws');
 
-const ExchangeRate = dbModel.ExchangeRate;
 const dynamodb = new AWS.DynamoDB();
+const ExchangeRate = dbModel.ExchangeRate;
 const DBNoResultError = error.DBNoResultError;
-
+const ArrayHelper = functionHelper.ArrayHelper;
+const PromiseHelper = functionHelper.PromiseHelper;
+const DynamoDBHelper = awsHelper.DynamoDBHelper;
 /**
  * @class
  * @memberOf module:ExchangeRateRepository
  */
 class ExchangeRateRepository {
+  /**
+   *  @function
+   *  @static
+   *  @function
+   *  @memberOf module:ExchangeRateRepository
+   *  @param {Array<ExchangeRate>} exchangeRates
+   *  @return {Promise<ConversionRate>}
+   * */
+  static importExchangeRate (exchangeRates) {
+    let insertJobs = ArrayHelper.arrayChunk(exchangeRates, config.aws.DYNAMO_DB_WRITE_BATCH_LIMIT).map((exchangeRate, index) => {
+      let request = {};
+      request[config.aws.DYNAMO_DB_TABLE_NAME] = exchangeRate.map(ExchangeRateRepository.exchangeRateToDynamoDBPutRequest);
+      logger.debug(`Require write open exchange rate batch[${index}] to Dynamo DB`);
+      return DynamoDBHelper.batchWriteItemWillRetryUnprocessedItems(request);
+    });
+    return PromiseHelper.seriesPromise(insertJobs);
+  }
+
+  /**
+   * @static
+   * @function
+   * @memberOf module:ExchangeRateRepository
+   * @param {ExchangeRate} exchangeRate - Record return from AWS SDK response.
+   * @return {Array<DynamoDBPutRequest>}
+   * */
+  static exchangeRateToDynamoDBPutRequest (exchangeRate) {
+    let rateDate = DateHelper.dateToDateInt(exchangeRate.minDate);
+    let putRequest = {
+      PutRequest: {
+        Item: {
+          'Rates': {
+            'M': {}
+          },
+          'RateDate': {
+            'N': rateDate
+          },
+          'RateBase': {
+            'S': exchangeRate.baseCurrency
+          }
+        }
+      }
+    };
+    let rates = putRequest.PutRequest.Item.Rates.M;
+    for (let currency of exchangeRate.allCurrency) {
+      let currencyExchangeRate = exchangeRate.rateForDate(rateDate, currency);
+      rates[currency] = {
+        N: String(currencyExchangeRate)
+      };
+    }
+    return putRequest;
+  }
+
   /** Query exchange rate during given date range
    * @static
    * @function
@@ -49,14 +105,11 @@ class ExchangeRateRepository {
       ExclusiveStartKey: exclusiveStartKey // TODO: pagination should separate function handle
     };
     if (config.env.NODE_ENV === 'testing') {
+      logger.warn('DB return always 1 due to testing mode');
       queryParams['Limit'] = config.mock.DYNAMO_DB_TESTING_RESULT_SET_LIMIT;
     }
     return dynamodb.query(queryParams).promise().then((data) => {
       let rateCollection = ExchangeRateRepository.exchangeRateFromDynamoDBResponse(data);
-      if (data.LastEvaluatedKey) {
-        logger.debug({key: data.LastEvaluatedKey}, 'Result has more item');
-        rateCollection.nextPageToken = Buffer.from(JSON.stringify(data.LastEvaluatedKey)).toString('base64');
-      }
       return Promise.resolve(rateCollection);
     });
   }
@@ -92,6 +145,10 @@ class ExchangeRateRepository {
         }
       }
     }
+    if (dynamoDBResponse.LastEvaluatedKey) {
+      logger.debug({key: dynamoDBResponse.LastEvaluatedKey}, 'Result has more item');
+      exchangeRate.nextPageToken = DynamoDBHelper.pageTokenFromLastEvaluatedKey(dynamoDBResponse.LastEvaluatedKey);
+    }
     return exchangeRate;
   }
 
@@ -119,16 +176,13 @@ class ExchangeRateRepository {
         ExclusiveStartKey: exclusiveStartKey // TODO: pagination should separate function handle
       };
       if (config.env.NODE_ENV === 'testing') {
+        logger.warn('DB return always 1 due to testing mode');
         queryParams['Limit'] = config.mock.DYNAMO_DB_TESTING_RESULT_SET_LIMIT;
       }
       return dynamodb.query(queryParams)
         .promise()
         .then((data) => {
           let rateCollection = ExchangeRateRepository.exchangeRateFromDynamoDBResponse(data);
-          if (data.LastEvaluatedKey) {
-            logger.info({key: data.LastEvaluatedKey});
-            rateCollection.nextPageToken = Buffer.from(JSON.stringify(data.LastEvaluatedKey)).toString('base64');
-          }
           return Promise.resolve(rateCollection);
         });
     });
@@ -167,6 +221,7 @@ class ExchangeRateRepository {
         .catch(reject);
     });
   }
+
   /**
    * @static
    * @function
@@ -192,40 +247,6 @@ class ExchangeRateRepository {
       return exchangeRate;
     });
     return exchangeRateCollection;
-  }
-
-  /**
-   * @static
-   * @function
-   * @memberOf module:ExchangeRateRepository
-   * @param {ExchangeRate} exchangeRate - Record return from AWS SDK response.
-   * @return {Array<DynamoDBPutRequest>}
-   * */
-  static exchangeRateToDynamoDBPutRequest (exchangeRate) {
-    let rateDate = DateHelper.dateToDateInt(exchangeRate.minDate);
-    let putRequest = {
-      PutRequest: {
-        Item: {
-          'Rates': {
-            'M': {}
-          },
-          'RateDate': {
-            'N': rateDate
-          },
-          'RateBase': {
-            'S': exchangeRate.baseCurrency
-          }
-        }
-      }
-    };
-    let rates = putRequest.PutRequest.Item.Rates.M;
-    for (let currency of exchangeRate.allCurrency) {
-      let currencyExchangeRate = exchangeRate.rateForDate(rateDate, currency);
-      rates[currency] = {
-        N: String(currencyExchangeRate)
-      };
-    }
-    return putRequest;
   }
 }
 

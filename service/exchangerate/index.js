@@ -3,18 +3,11 @@
 /**
  * @module ExchangeRateService
  */
-const config = require('../../config');
-
-const logger = require('../../logger');
 const db = require('../../model/db');
-const functionHelper = require('../../helper/functional');
-const AWSHelper = require('../../helper/aws');
 
 const ExchangeRateRepository = require('../../repository/exchangerate');
 
 const ConversionRate = db.ConversionRate;
-const ArrayHelper = functionHelper.ArrayHelper;
-const PromiseHelper = functionHelper.PromiseHelper;
 
 /**
  * @class ExchangeRateService
@@ -30,15 +23,8 @@ class ExchangeRateService {
    *  @return {Promise<ConversionRate>}
    * */
   static importExchangeRate (exchangeRates) {
-    let insertJobs = ArrayHelper.arrayChunk(exchangeRates, config.aws.DYNAMO_DB_WRITE_BATCH_LIMIT).map((exchangeRate, index) => {
-      let request = {};
-      request[config.aws.DYNAMO_DB_TABLE_NAME] = exchangeRate.map(ExchangeRateRepository.exchangeRateToDynamoDBPutRequest);
-      logger.debug(`Require write open exchange rate batch[${index}] to Dynamo DB`);
-      return AWSHelper.batchWriteItemWillRetryUnprocessedItems(request);
-    });
-    return PromiseHelper.seriesPromise(insertJobs);
+    return ExchangeRateRepository.importExchangeRate(exchangeRates);
   }
-
   /**
    *  @static
    *  @function
