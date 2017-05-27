@@ -29,7 +29,7 @@ module.exports = Object.freeze({
     DYNAMO_DB_TABLE_NAME: 'ExchangeRates',
     DYNAMO_DB_WRITE_BATCH_LIMIT: 25,
     S3_LAMBDA_SOURCE_CODE_BUCKET: 'dng-dev-resources',
-    S3_LAMBDA_SOURCE_CODE_PATH: 'lambda-codes/open-exchange-backend/openexchange-backend-2017052404-v0.0.2.zip',
+    S3_LAMBDA_SOURCE_CODE_PATH: 'lambda-codes/open-exchange-backend/openexchange-backend-201705242802-v0.0.3.zip',
     LAMBDA_SERVERLESS_EXPRESS_FUNCTION_NAME: 'currencyExchangeBackend',
     LAMBDA_DOWNLOAD_EXCHANGE_RATE_CRON_JOB_NAME: 'downloadOpenExchangeRate',
     API_GATEWAY_API_NAME: 'Currency exchange backend',

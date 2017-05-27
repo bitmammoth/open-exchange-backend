@@ -103,7 +103,7 @@ class ConversionRateRequest {
    * @return {ConversionRateRequest}
    * */
   withPageToken (pageToken) {
-    this.pageToken = DynamoDBHelper.exclusiveStartKeyFromPageToken(pageToken);
+    this.pageToken = pageToken;
     return this;
   }
 

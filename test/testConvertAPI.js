@@ -19,18 +19,47 @@ chai.use(chaiAsPromised);
 
 describe('Testing historical convert currency API', () => {
   it('base on USD return only HKD conversion rate on passed 10 days', (done) => {
-    chai.request(app).get('/currency/convert/historical/USD/to/HKD')
-      .query({
-        amount: 10.0,
-        startDate: moment().subtract(10, 'days').toDate().toISOString(),
-        endDate: new Date().toISOString()
-      })
+    let startDate = moment().subtract(10, 'days').toDate().toISOString();
+    let endDate = new Date().toISOString();
+    let base = 'USD';
+    let target = 'HKD';
+    let amount = 10;
+    getHistoricalCoversionRateBaseOn(base, target, startDate, endDate, amount)
       .end((err, res) => {
         res.body.data.rates.should.have.property(res.body.data.from);
         done();
       });
   });
+  it('Paginated conversion rate base on HKD to JPY from YTD', (done) => {
+    let startDate = moment().startOf('year').toDate().toISOString();
+    let endDate = new Date().toISOString();
+    let base = 'HKD';
+    let target = 'JPY';
+    let amount = 10;
+    getHistoricalCoversionRateBaseOn(base,target, startDate, endDate, amount)
+      .end((_err, _res) => {
+        _res.body.data.should.have.property('next_page_token');
+        let page2Token = _res.body.data.next_page_token; // Token required to fetch page 2.
+        getHistoricalCoversionRateBaseOn(base, target,startDate, endDate, amount, page2Token)
+          .end((err, res) => {
+            res.body.data.should.have.property('next_page_token');
+            let page3Token = res.body.data.next_page_token;// Token required to fetch page 3.
+            page2Token.should.not.equal(page3Token);
+            done();
+          });
+      });
+  });
 });
+
+function getHistoricalCoversionRateBaseOn (from, to, startDate, endDate, amount, pageToken) {
+  return chai.request(app).get(`/currency/convert/historical/${from}/to/${to}`)
+    .query({
+      amount: amount,
+      startDate: startDate,
+      endDate: endDate,
+      pageToken: pageToken
+    });
+}
 
 describe('Testing Least convert currency API', () => {
   it('Should base on USD return relative value of HKD on least import date', (done) => {

@@ -19,11 +19,10 @@ chai.use(chaiAsPromised);
 
 describe('Testing historical Exchange API', () => {
   it('base on USD on passed 10 days', (done) => {
-    chai.request(app).get('/currency/exchange/historical/USD')
-      .query({
-        startDate: moment().subtract(10, 'days').toDate().toISOString(),
-        endDate: new Date().toISOString()
-      })
+    let startDate = moment().subtract(10, 'days').toDate().toISOString();
+    let endDate = new Date().toISOString();
+    let base = 'USD';
+    getHistoricalExchangeRateBaseOn(base, startDate, endDate)
       .end((err, res) => {
         res.body.data.should.have.property('next_page_token');
         res.body.data.should.have.property('rates');
@@ -32,11 +31,10 @@ describe('Testing historical Exchange API', () => {
       });
   });
   it('base on HKD on passed 10 days', (done) => {
-    chai.request(app).get('/currency/exchange/historical/HKD')
-      .query({
-        startDate: moment().subtract(10, 'days').toDate().toISOString(),
-        endDate: new Date().toISOString()
-      })
+    let startDate = moment().subtract(10, 'days').toDate().toISOString();
+    let endDate = new Date().toISOString();
+    let base = 'HKD';
+    getHistoricalExchangeRateBaseOn(base, startDate, endDate)
       .end((err, res) => {
         res.body.data.should.have.property('next_page_token');
         res.body.data.should.have.property('rates');
@@ -45,11 +43,10 @@ describe('Testing historical Exchange API', () => {
       });
   });
   it('base on HKD from YTD', (done) => {
-    chai.request(app).get('/currency/exchange/historical/HKD')
-      .query({
-        startDate: moment().startOf('year').toDate().toISOString(),
-        endDate: new Date().toISOString()
-      })
+    let startDate = moment().startOf('year').toDate().toISOString();
+    let endDate = new Date().toISOString();
+    let base = 'HKD';
+    getHistoricalExchangeRateBaseOn(base, startDate, endDate)
       .end((err, res) => {
         res.body.data.should.have.property('next_page_token');
         res.body.data.should.have.property('rates');
@@ -70,7 +67,6 @@ describe('Testing historical Exchange API', () => {
             res.body.data.should.have.property('next_page_token');
             let page3Token = res.body.data.next_page_token;// Token required to fetch page 3.
             page2Token.should.not.equal(page3Token);
-            console.log(page3Token);
             done();
           });
       });
