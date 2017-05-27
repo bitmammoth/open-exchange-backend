@@ -41,3 +41,6 @@ npm-debug.log
 
 # Mac OS auto generate
 .DS_Store
+
+# API BluePrint file
+apiary.html

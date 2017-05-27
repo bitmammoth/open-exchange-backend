@@ -25,6 +25,10 @@ class ExchangeRateRequest {
      * @type Moment
      * */
     this.endDate = null;
+    /**
+    * @type String
+    * */
+    this.pageToken = null;
   }
 
   /**
@@ -42,6 +46,17 @@ class ExchangeRateRequest {
    * */
   endOf (endDate) {
     this.endDate = moment(endDate);
+    return this;
+  }
+
+  /**
+   * @param {String} pageToken - base64 encoding token
+   * @return {ConversionRateRequest}
+   * */
+  withPageToken (pageToken) {
+    if (pageToken) {
+      this.pageToken = JSON.parse(Buffer.from(pageToken, 'base64').toString('ascii'));
+    }
     return this;
   }
 

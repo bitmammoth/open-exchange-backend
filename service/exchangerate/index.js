@@ -80,7 +80,8 @@ class ExchangeRateService {
    * */
   static queryExchangeRateBaseOnCurrency (exchangeRateRequest) {
     return ExchangeRateRepository.historicalExchangeRate(
-      exchangeRateRequest.startDate, exchangeRateRequest.endDate, exchangeRateRequest.baseCurrency
+      exchangeRateRequest.startDate, exchangeRateRequest.endDate,
+      exchangeRateRequest.baseCurrency, exchangeRateRequest.pageToken
     );
   }
 
@@ -92,7 +93,10 @@ class ExchangeRateService {
    *  @return {Promise<ExchangeRate>}
    * */
   static queryLeastExchangeRateBaseOnCurrency (exchangeRateRequest) {
-    return ExchangeRateRepository.leastExchangeRate(exchangeRateRequest.baseCurrency);
+    return ExchangeRateRepository.leastExchangeRate(
+      exchangeRateRequest.baseCurrency,
+      exchangeRateRequest.pageToken
+    );
   }
 }
 

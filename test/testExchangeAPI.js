@@ -25,7 +25,7 @@ describe('Testing historical Exchange API', () => {
         endDate: new Date().toISOString()
       })
       .end((err, res) => {
-        res.body.data.should.have.property('nextPageToken');
+        res.body.data.should.have.property('next_page_token');
         res.body.data.should.have.property('rates');
         res.body.data.rates.should.have.property(res.body.data.from);
         done();
@@ -38,7 +38,7 @@ describe('Testing historical Exchange API', () => {
         endDate: new Date().toISOString()
       })
       .end((err, res) => {
-        res.body.data.should.have.property('nextPageToken');
+        res.body.data.should.have.property('next_page_token');
         res.body.data.should.have.property('rates');
         res.body.data.rates.should.have.property(res.body.data.from);
         done();
@@ -51,13 +51,40 @@ describe('Testing historical Exchange API', () => {
         endDate: new Date().toISOString()
       })
       .end((err, res) => {
-        res.body.data.should.have.property('nextPageToken');
+        res.body.data.should.have.property('next_page_token');
         res.body.data.should.have.property('rates');
         res.body.data.rates.should.have.property(res.body.data.from);
         done();
       });
   });
+  it('Pagination base on HKD from YTD', (done) => {
+    let startDate = moment().startOf('year').toDate().toISOString();
+    let endDate = new Date().toISOString();
+    let base = 'HKD';
+    getHistoricalExchangeRateBaseOn(base, startDate, endDate)
+      .end((_err, _res) => {
+        _res.body.data.should.have.property('next_page_token');
+        let page2Token = _res.body.data.next_page_token; // Token required to fetch page 2.
+        getHistoricalExchangeRateBaseOn(base, startDate, endDate, page2Token)
+          .end((err, res) => {
+            res.body.data.should.have.property('next_page_token');
+            let page3Token = res.body.data.next_page_token;// Token required to fetch page 3.
+            page2Token.should.not.equal(page3Token);
+            console.log(page3Token);
+            done();
+          });
+      });
+  });
 });
+
+function getHistoricalExchangeRateBaseOn (currency, startDate, endDate, pageToken) {
+  return chai.request(app).get(`/currency/exchange/historical/${currency}`)
+    .query({
+      startDate: startDate,
+      endDate: endDate,
+      pageToken: pageToken
+    });
+}
 
 describe('Testing least Exchange API', () => {
   it('base on USD on least import date', (done) => {

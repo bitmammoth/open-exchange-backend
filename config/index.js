@@ -22,6 +22,9 @@ module.exports = Object.freeze({
     DATEINT_FORMAT: 'YYYYMMDD',
     INPUT_DATE_FROMAT: 'YYYY-MM-DD'
   },
+  mock: {
+    DYNAMO_DB_TESTING_RESULT_SET_LIMIT: 1
+  },
   aws: {
     DYNAMO_DB_TABLE_NAME: 'ExchangeRates',
     DYNAMO_DB_WRITE_BATCH_LIMIT: 25,

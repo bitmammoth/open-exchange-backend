@@ -27,11 +27,12 @@ class ExchangeRateRepository {
    * @param {Moment} startDate - Inclusive date
    * @param {Moment} endDate - Exclusive date
    * @param {String} baseCurrency
+   * @param {Object} [exclusiveStartKey] - Will pass to SDK 'ExclusiveStartKey' field
    * @return {Promise<ExchangeRate>}
    * @see {@link http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#query-property}
    * */
-  static historicalExchangeRate (startDate, endDate, baseCurrency) {
-    return dynamodb.query({
+  static historicalExchangeRate (startDate, endDate, baseCurrency, exclusiveStartKey) {
+    let queryParams = {
       ExpressionAttributeValues: {
         ':startDate': {
           N: startDate.format('YYYYMMDD')
@@ -45,11 +46,15 @@ class ExchangeRateRepository {
       },
       KeyConditionExpression: 'RateBase = :currencyBase AND RateDate BETWEEN :startDate AND :endDate',
       TableName: config.aws.DYNAMO_DB_TABLE_NAME,
-      Limit: 1
-    }).promise().then((data) => {
+      ExclusiveStartKey: exclusiveStartKey // TODO: pagination should separate function handle
+    };
+    if (config.env.NODE_ENV === 'testing') {
+      queryParams['Limit'] = config.mock.DYNAMO_DB_TESTING_RESULT_SET_LIMIT;
+    }
+    return dynamodb.query(queryParams).promise().then((data) => {
       let rateCollection = ExchangeRateRepository.exchangeRateFromDynamoDBResponse(data);
       if (data.LastEvaluatedKey) {
-        logger.info({key: data.LastEvaluatedKey});
+        logger.debug({key: data.LastEvaluatedKey}, 'Result has more item');
         rateCollection.nextPageToken = Buffer.from(JSON.stringify(data.LastEvaluatedKey)).toString('base64');
       }
       return Promise.resolve(rateCollection);
@@ -95,11 +100,12 @@ class ExchangeRateRepository {
    * @function
    * @memberOf module:ExchangeRateRepository
    * @param {String} baseCurrency - Inclusive date
+   * @param {Object} [exclusiveStartKey] - Will pass to SDK 'ExclusiveStartKey' field
    * @return {Promise<ExchangeRate>}
    * */
-  static leastExchangeRate (baseCurrency) {
+  static leastExchangeRate (baseCurrency, exclusiveStartKey) {
     return ExchangeRateRepository.leastSavedExchangeRateDate(baseCurrency).then((leastRateDate) => {
-      return dynamodb.query({
+      let queryParams = {
         ExpressionAttributeValues: {
           ':leastDate': {
             N: DateHelper.dateToDateInt(leastRateDate)
@@ -110,8 +116,12 @@ class ExchangeRateRepository {
         },
         KeyConditionExpression: 'RateBase = :currencyBase AND RateDate = :leastDate',
         TableName: config.aws.DYNAMO_DB_TABLE_NAME,
-        Limit: 1
-      })
+        ExclusiveStartKey: exclusiveStartKey // TODO: pagination should separate function handle
+      };
+      if (config.env.NODE_ENV === 'testing') {
+        queryParams['Limit'] = config.mock.DYNAMO_DB_TESTING_RESULT_SET_LIMIT;
+      }
+      return dynamodb.query(queryParams)
         .promise()
         .then((data) => {
           let rateCollection = ExchangeRateRepository.exchangeRateFromDynamoDBResponse(data);

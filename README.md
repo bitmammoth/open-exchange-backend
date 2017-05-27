@@ -38,6 +38,12 @@ For better logging you may set NODE_ENV to development/debugging in environment 
 5. You can access localhost:3000 
 ```
 
+If you want edit API document written in [API Blueprint](https://apiblueprint.org)
+You can install (apiary-client)[https://github.com/apiaryio/apiary-client] by
+```
+gem install apiaryio
+```
+
 ## Default aws configuration
 
 ```
@@ -78,6 +84,8 @@ For better logging you may set NODE_ENV to development/debugging in environment 
 **Coding style guideline** 
 * Follow and use eslint to write code
 * Code coverage target : 90% (Stmets)
+* JS variable always naming with mixedCase
+* JSON key always use _ as sep . Correct : event_timestamp Incorrect: eventTimestamp
 * Develop in strict mode by add "use strict" to beginning of JS file
 * Inherits NotableError if you want error will logged into log file.
 * Function never more than 3 parameters

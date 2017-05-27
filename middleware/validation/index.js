@@ -19,6 +19,7 @@ class VerificationMiddleware {
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
    */
   static verifyHistoricalExchangeRateRequest (req, res, next) {
+    req.checkQuery('pageToken', 'Next page token').optional().isBase64();
     req.checkParams('from', 'Missing base currency').notEmpty();
     req.checkQuery('startDate', 'Start date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
     req.checkQuery('endDate', 'End date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
@@ -39,6 +40,7 @@ class VerificationMiddleware {
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
    */
   static verifyLeastExchangeRateRequest (req, res, next) {
+    req.checkQuery('pageToken', 'Next page token').optional().isBase64();
     req.checkParams('from', 'Missing base currency').notEmpty();
     req.getValidationResult()
       .then(ValidationHelper.validationResolvedCallback(next))
@@ -54,6 +56,7 @@ class VerificationMiddleware {
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
    */
   static verifyHistoricalConversionRateRequest (req, res, next) {
+    req.checkQuery('pageToken', 'Next page token').optional().isBase64();
     req.checkParams('from', 'Missing base currency').notEmpty();
     req.checkParams('to', 'Missing target currency').notEmpty();
     req.checkQuery('startDate', 'Start date mismatch YYYY-MM-DD format').notEmpty().isISO8601();
@@ -76,6 +79,7 @@ class VerificationMiddleware {
    * @param {Object} next - Callback argument to the middleware function, called "next" by convention.
    */
   static verifyLeastConversionRequest (req, res, next) {
+    req.checkQuery('pageToken', 'Next page token').optional().isBase64();
     req.checkParams('from', 'Missing base currency').notEmpty();
     req.checkParams('to', 'Missing target currency').notEmpty();
     req.checkQuery('amount', 'Missing amount in base currecny').notEmpty().isFloat();

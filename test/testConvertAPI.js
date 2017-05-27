@@ -30,18 +30,6 @@ describe('Testing historical convert currency API', () => {
         done();
       });
   });
-  it('base on HKD return only JPY conversion rate on passed 10 days', (done) => {
-    chai.request(app).get('/currency/convert/historical/HKD/to/JPY')
-      .query({
-        amount: 10.0,
-        startDate: moment().subtract(10, 'days').format('MM-DD-YYYY'),
-        endDate: moment().format('MM-DD-YYYY')
-      })
-      .end((err, res) => {
-        res.should.have.status(400);
-        done();
-      });
-  });
 });
 
 describe('Testing Least convert currency API', () => {
@@ -57,7 +45,19 @@ describe('Testing Least convert currency API', () => {
   });
 });
 
-describe('Testing Least convert currency API Error', () => {
+describe('Testing convert currency API Error', () => {
+  it('base on HKD return only JPY conversion rate on passed 10 days', (done) => {
+    chai.request(app).get('/currency/convert/historical/HKD/to/JPY')
+      .query({
+        amount: 10.0,
+        startDate: moment().subtract(10, 'days').format('MM-DD-YYYY'),
+        endDate: moment().format('MM-DD-YYYY')
+      })
+      .end((err, res) => {
+        res.should.have.status(406);
+        done();
+      });
+  });
   it('Amount is not number ', (done) => {
     chai.request(app).get('/currency/convert/least/USD/to/HKD')
       .query({

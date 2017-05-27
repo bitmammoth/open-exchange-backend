@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://127.0.0.1:3000
+HOST: localhost:3000
 
 # Currency exchange API
 Currency exchange is a simple API allowing user
@@ -17,6 +17,7 @@ Date format use ISO 8601 date string format [ISO8601](https://developer.mozilla.
     + from (string, required) ... Base exchange currency
     + startDate(date, required) ... Start date of result
     + endDate(date, required) ... End date of result (exclusive)
+    + pageToken (string, optional) ... Page token that return from previous response next_page_token
 + Response 200 (application/json)
 
         {
@@ -26,40 +27,24 @@ Date format use ISO 8601 date string format [ISO8601](https://developer.mozilla.
                 base: "USD",
                 from: "20161231",
                 to: "20170531",
+                next_page_token: 'eyJSYXRlQmFzZSI6eyJTIjoiSEtEIn0sIlJhdGVEYXRlIjp7Ik4iOiIyMDE3MDEwMiJ9fQ==', //Only appear while more result is available on given parameters
                 rates: {
                     "20170520": {
                         "FJD": 2.087302,
                         "MXN": 18.7159,
                         "STD": 21864.049805,
-                        "SCR": 13.695,
-                        "CDF": 1417.5,
-                        "BBD": 2,
-                        "GTQ": 7.304677,
-                        "CLP": 668.5,
-                        "HNL": 23.288384,
-                        "UGX": 3610.75,
-                        "ZAR": 13.232635,
-                        "TND": 2.434496,
-                        "CUC": 1,
-                        "BSD": 1,
-                        "SLL": 7455,
-                        "SDG": 6.69,
-                        "IQD": 1163.4,
-                        "CUP": 25.5,
-                        "GMD": 46.1,
-                        "TWD": 30.006,
                         ......
                     }
                 }
             }
         }
-
 
 ## Least exchange rate [/currency/exchange/least/{from}]
 
 ### Least exchange rate [GET]
 + Parameters
     + from (string, required) ... Base exchange currency
+    + pageToken (string, optional) ... Page token that return from previous response next_page_token
 + Response 200 (application/json)
 
         {
@@ -69,34 +54,17 @@ Date format use ISO 8601 date string format [ISO8601](https://developer.mozilla.
                 base: "USD",
                 from: "20161231",
                 to: "20170531",
+                next_page_token: 'eyJSYXRlQmFzZSI6eyJTIjoiSEtEIn0sIlJhdGVEYXRlIjp7Ik4iOiIyMDE3MDEwMiJ9fQ==', //Only appear while more result is available on given parameters
                 rates: {
                     "20170520": {
                         "FJD": 2.087302,
                         "MXN": 18.7159,
                         "STD": 21864.049805,
-                        "SCR": 13.695,
-                        "CDF": 1417.5,
-                        "BBD": 2,
-                        "GTQ": 7.304677,
-                        "CLP": 668.5,
-                        "HNL": 23.288384,
-                        "UGX": 3610.75,
-                        "ZAR": 13.232635,
-                        "TND": 2.434496,
-                        "CUC": 1,
-                        "BSD": 1,
-                        "SLL": 7455,
-                        "SDG": 6.69,
-                        "IQD": 1163.4,
-                        "CUP": 25.5,
-                        "GMD": 46.1,
-                        "TWD": 30.006,
                         ......
                     }
                 }
             }
         }
-
 
 # Group Convert currency amount
 ## Convert currency with historical exchange rate [/currency/convert/historical/{from}/to/{to}{?amount}{?startDate}{?endDate}]
@@ -108,6 +76,8 @@ Date format use ISO 8601 date string format [ISO8601](https://developer.mozilla.
     + startDate(date, required) ... Start date of result
     + endDate(date, required) ... End date of result (exclusive)
     + amount(number, required) ... Amount in base currency
++ Request No pagination
+
 + Response 200 (application/json)
 
         {
@@ -119,31 +89,15 @@ Date format use ISO 8601 date string format [ISO8601](https://developer.mozilla.
                 baseAmount: 300,
                 from: "20161231",
                 to: "20170531",
+                next_page_token: 'eyJSYXRlQmFzZSI6eyJTIjoiSEtEIn0sIlJhdGVEYXRlIjp7Ik4iOiIyMDE3MDEwMiJ9fQ==', //Only appear while more result is available on given parameters
                 rates: {
                     "20170501": 2333.5749,
                     "20170502": 2334.3585000000003,
-                    "20170503": 2334.354,
-                    "20170504": 2334.813,
-                    "20170505": 2335.2,
-                    "20170506": 2335.2,
-                    "20170507": 2335.095,
-                    "20170508": 2335.4259,
-                    "20170509": 2335.245,
-                    "20170510": 2335.86,
-                    "20170511": 2336.8092,
-                    "20170512": 2338.098,
-                    "20170513": 2338.098,
-                    "20170514": 2338.0875,
-                    "20170515": 2336.0265,
-                    "20170516": 2336.217,
-                    "20170517": 2335.6965,
-                    "20170518": 2334.9516000000003,
-                    "20170519": 2334.9915,
-                    "20170520": 2334.9927,
-                    "20170521": 2335.005
+                    "20170503": 2334.354
                 }
             }
         }
+
 
 ## Convert currency with least exchange rate [/currency/convert/least/{from}/to/{to}{?amount}]
 
@@ -163,6 +117,7 @@ Date format use ISO 8601 date string format [ISO8601](https://developer.mozilla.
                 baseAmount: 300,
                 from: "20161231",
                 to: "20170531",
+                next_page_token: 'eyJSYXRlQmFzZSI6eyJTIjoiSEtEIn0sIlJhdGVEYXRlIjp7Ik4iOiIyMDE3MDEwMiJ9fQ==', //Only appear while more result is available on given parameters
                 rates: {
                     "20170521": 2335.005
                 }

@@ -46,6 +46,10 @@ class ConversionRateRequest {
      * @type Number
      * */
     this.amount = 1;
+    /**
+     * @type String
+     * */
+    this.pageToken = null;
   }
 
   /**
@@ -94,12 +98,24 @@ class ConversionRateRequest {
   }
 
   /**
+   * @param {String} pageToken - base64 encoding token
+   * @return {ConversionRateRequest}
+   * */
+  withPageToken (pageToken) {
+    if (pageToken) {
+      this.pageToken = JSON.parse(Buffer.from(pageToken, 'base64').toString('ascii'));
+    }
+    return this;
+  }
+
+  /**
    * @return {ExchangeRateRequest}
    * */
   asExchangeRateRequest () {
     return ExchangeRateRequest.exchangeRateBaseOn(this.baseCurrency)
       .startFrom(this.startDate)
-      .endOf(this.endDate);
+      .endOf(this.endDate)
+      .withPageToken(this.pageToken);
   }
 }
 
