@@ -1,4 +1,53 @@
-## Table of content
+## General table of content
+
+-[Description](#description)
+
+-[Solution architecture](#solution-architecture)
+
+-[Framework/Service](#selected-framework-and-service)
+
+-[Production link](#production-link)
+
+-[Technical detail](#technical-details)
+
+## Description
+
+This system is designed for download exchange-rate from [openexchangerates.org](https://openexchangerates.org) which is service 
+that will provide hourly updated exchange rate of currency that based on USD for free account. 
+
+Our system will on top on USD base rate provide another based rate (Base on JPY, HKD for example)
+
+## Solution architecture
+How serverless application work
+
+![Backend architecture](https://s3-ap-northeast-1.amazonaws.com/open-doc/open-exchange-backend/images/exchange-rate-challenge-backend-arch.jpg)
+
+I have selected AWS serverless architecture as system based.
+
+AWS serverless can provide following benefit:
+* All choice is self-managed service that mean i can just force how to implement my logic instead of how to configure server
+* Out of box provide auto scaling, logging, monitoring
+
+With below limitation:
+* Each request maximum execution time is [5 minutes](http://docs.aws.amazon.com/lambda/latest/dg/limits.html)
+* Implementation must stateless that mean session is not working on AWS serverless
+
+## Selected framework and service
+* [Dynamo db](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html) - Strong type NoSQL DB engine. it provide fast, auto scaling for reading data from it.
+* [Bunyan](https://github.com/trentm/node-bunyan) - Logger that output is json format it provide machine readable format for log analysis
+* [Express](http://expressjs.com) - Express web framework is first class support by [AWS](https://github.com/awslabs/aws-serverless-express)
+* [istanbul](https://istanbul.js.org) - Code coverage analytics tools of javascript. it provide the hints for statement is covered by test case or not
+* [eslint](http://eslint.org) - Code styling check tool on javascript. it is provide flexible config and will keep code style consistency
+
+
+## Production link
+
+Only support Chrome
+[Simple front end demo](https://d1pi9murur51x7.cloudfront.net/convert/historical)
+
+[Backend API endpoint](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test)
+
+## Technical Details
 
 -[Installation](#installation)
 
@@ -17,7 +66,6 @@
 -[Documentation](#documentation)
 
 -[Reference](#reference)
-
 
 
 ## Installation
@@ -45,8 +93,6 @@ gem install apiaryio
 ```
 
 ## Default aws configuration
-How serverless application work
-![Backend architecture](https://s3-ap-northeast-1.amazonaws.com/open-doc/open-exchange-backend/images/exchange-rate-challenge-backend-arch.jpg)
 
 Noticed that you will need create your own S3 bucket inorder to hold the lambda source code. for configuration see [Configurable](#configable-options)
 
