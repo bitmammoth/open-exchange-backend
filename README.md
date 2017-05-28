@@ -8,6 +8,8 @@
 
 -[Production link](#production-link)
 
+-[Example API call](#example-api-call)
+
 -[Technical detail](#technical-details)
 
 ## Description
@@ -46,6 +48,28 @@ Only support Chrome
 [Simple front end demo](https://d1pi9murur51x7.cloudfront.net/convert/historical)
 
 [Backend API endpoint](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test)
+
+## Example api call
+
+* Historical exchange rate 
+
+    * [Base on USD](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test/currency/exchange/historical/USD?startDate=2017-01-01&endDate=2017-05-01)
+
+    * [Base on JPY](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test/currency/exchange/historical/JPY?startDate=2017-01-01&endDate=2017-05-01)
+
+* Least exchange rate 
+    * [Base on USD](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test/currency/exchange/least/USD)
+
+    * [Base on JPY](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test/currency/exchange/least/JPY)
+
+* Historical conversion rate  (exchange rate is special case of conversion rate with amount = 1)
+    * [From USD to JPY](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test/currency/convert/historical/USD/to/JPY?startDate=2017-01-01&endDate=2017-05-01&amount=1000)
+    * [From HKD to JPY](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test/currency/convert/historical/HKD/to/JPY?startDate=2017-01-01&endDate=2017-05-01&amount=1000)
+
+* Least conversion rate
+    * [From USD to JPY](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test/currency/convert/least/USD/to/JPY?amount=1000)
+    * [From HKD to JPY](https://8m3unj9isf.execute-api.ap-northeast-1.amazonaws.com/test/currency/convert/least/HKD/to/JPY?amount=1000)
+
 
 ## Technical Details
 
