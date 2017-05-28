@@ -18,7 +18,9 @@ const ExchangeRateCollectionBuilder = dbModel.ExchangeRateCollectionBuilder;
 const DBNoResultError = error.DBNoResultError;
 const ArrayHelper = functionHelper.ArrayHelper;
 const PromiseHelper = functionHelper.PromiseHelper;
+const AsyncHelper = functionHelper.AsyncHelper;
 const DynamoDBHelper = awsHelper.DynamoDBHelper;
+
 /**
  * @class
  * @memberOf module:ExchangeRateRepository
@@ -37,9 +39,9 @@ class ExchangeRateRepository {
       let request = {};
       request[config.aws.DYNAMO_DB_TABLE_NAME] = exchangeRate.map(ExchangeRateRepository.exchangeRateToDynamoDBPutRequest);
       logger.debug(`Require write open exchange rate batch[${index}] to Dynamo DB`);
-      return DynamoDBHelper.batchWriteItemWillRetryUnprocessedItems(request);
+      return PromiseHelper.wrapPromiseWithCallback(DynamoDBHelper.batchWriteItemWillRetryUnprocessedItems)(request);
     });
-    return PromiseHelper.seriesPromise(insertJobs);
+    return AsyncHelper.series(insertJobs);
   }
 
   /**

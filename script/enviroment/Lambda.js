@@ -6,7 +6,6 @@ const config = require('../../config');
 const error = require('../../error');
 const CloudWatchConstruct = require('./CloudWatch');
 const PromiseErrorHandler = require('./ErrorHandler');
-const PromiseHelper = require('../../helper/functional').PromiseHelper;
 const logger = require('../../logger');
 
 const lambda = new AWS.Lambda();
@@ -25,7 +24,7 @@ class LambdaConstruct {
    * @return {Promise}
    * */
   static construct () {
-    return PromiseHelper.seriesPromise([
+    return Promise.all([
       LambdaConstruct.constructExpressLambda(),
       LambdaConstruct.constructCronJobLambda()
     ]);
@@ -70,7 +69,7 @@ class LambdaConstruct {
       },
       FunctionName: AWS_CONFIG.LAMBDA_DOWNLOAD_EXCHANGE_RATE_CRON_JOB_NAME,
       Handler: 'lambdaCron.handler',
-      Role: AWS_CONFIG.AWS_CONFIG.IAM_ROLE_ARN,
+      Role: AWS_CONFIG.IAM_ROLE_ARN,
       Runtime: 'nodejs6.10',
       Description: 'Will download exchange rate to dynamo DB',
       MemorySize: 512,
@@ -141,10 +140,13 @@ class LambdaConstruct {
    * @return {Promise}
    * */
   static shouldCreateLambda (lambdaFunctionName) {
-    return lambda.getFunction({
-      FunctionName: lambdaFunctionName
-    }).promise()
-      .then(() => Promise.reject(new AlreadyExistError(`Lambda: ${lambdaFunctionName}`)));
+    return new Promise((resolve, reject) => {
+      lambda.getFunction({
+        FunctionName: lambdaFunctionName
+      }).promise()
+        .catch(resolve)
+        .then(() => reject(new AlreadyExistError(`Lambda: ${lambdaFunctionName}`)));
+    });
   }
 
   /**

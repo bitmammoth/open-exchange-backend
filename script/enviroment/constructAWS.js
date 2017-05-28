@@ -10,6 +10,8 @@ process.env.NODE_ENV = 'development';
 const logger = require('../../logger');
 const error = require('../../error');
 const PromiseHelper = require('../../helper/functional').PromiseHelper;
+const AsyncHelper = require('../../helper/functional').AsyncHelper;
+
 const IAM = require('./IAM');
 const CloudWatch = require('./CloudWatch');
 const Lambda = require('./Lambda');
@@ -24,7 +26,6 @@ if (require.main === module) {
   }).catch((err) => {
     if (err instanceof AlreadyExistError) {
       logger.info('Environment already constructed');
-      logger.info({err: err}, 'Resource already exist Error!');
       process.exit(0);
     } else {
       logger.error({err: err}, 'Unexpected Error!');
@@ -35,10 +36,10 @@ if (require.main === module) {
 
 function constructAWSEnvironment () {
   let constructAWSJobs = [];
-  constructAWSJobs.push(IAM.construct());
-  constructAWSJobs.push(CloudWatch.construct());
-  constructAWSJobs.push(Lambda.construct());
-  constructAWSJobs.push(DynamoDB.construct());
-  constructAWSJobs.push(APIGateWay.construct());
-  return PromiseHelper.seriesPromise(constructAWSJobs);
+  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(IAM.construct)());
+  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(CloudWatch.construct)());
+  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(Lambda.construct)());
+  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(DynamoDB.construct)());
+  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(APIGateWay.construct)());
+  return AsyncHelper.series(constructAWSJobs);
 }

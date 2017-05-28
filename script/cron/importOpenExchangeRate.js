@@ -11,6 +11,7 @@ const ExchangeRateService = require('../../service/exchangerate');
 const logger = require('../../logger');
 
 const PromiseHelper = functionHelper.PromiseHelper;
+const AsyncHelper = functionHelper.AsyncHelper;
 
 /**
  * @function
@@ -26,10 +27,10 @@ function importOpenExchangeRateOfDateRange (importStartDate, importEndDate) {
   let currentDate = startDate.clone();
   logger.info(`Import open exchange where ${startDate} <= date < ${endDate}`);
   while (currentDate.isBefore(endDate)) {
-    importJobs.push(importOpenExchangeRateOfDate(currentDate.toDate()));
+    importJobs.push(PromiseHelper.wrapPromiseWithCallback(importOpenExchangeRateOfDate)(currentDate.toDate()));
     currentDate = currentDate.add(1, 'days');
   }
-  return PromiseHelper.seriesPromise(importJobs);
+  return AsyncHelper.series(importJobs);
 }
 
 /** Download and import exchange rate into DB

@@ -161,7 +161,12 @@ aws: {
         /exchangrate - API logic of exhcnage rate
         /conversionrate - API logic of conversion rate
         /thirdparty - Logic for commiucate to open-exchange-rate
-    /test 
+    /test
+    .eslintrc.js - ESlint config
+    apiary.apib - API Blueprint
+    app.js - Express JS setup
+    lambda.js - Serverless express intergration
+    lambdaCron.js - Lambda Cronjob intergration
 
 ## Development Practice 
 

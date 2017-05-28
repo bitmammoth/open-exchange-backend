@@ -4,8 +4,6 @@
  * @module FunctionalHelper
  */
 
-const ArrayHelper = require('./ArrayHelper');
-const PromiseHelper = require('./PromiseHelper');
-
-module.exports.ArrayHelper = ArrayHelper;
-module.exports.PromiseHelper = PromiseHelper;
+module.exports.ArrayHelper = require('./ArrayHelper');
+module.exports.PromiseHelper = require('./PromiseHelper');
+module.exports.AsyncHelper = require('./ASyncHelper');

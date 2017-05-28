@@ -24,30 +24,38 @@ class IAMConstructor {
    * @return {Promise}
    * */
   static construct () {
-    return IAMConstructor.shouldCreateIAMRoleForServiceExecute()
+    return IAMConstructor
+      .shouldCreateIAMRoleForServiceExecute()
       .then(IAMConstructor.createRoleForServiceExecute)
       .catch(PromiseErrorHandler.handleError);
   }
 
   /**
    * Will create IAM role with Admin Right. You can modify them if Admin role has concern
+   * Will sleep for 10s prevent role don't appear while create lambda
    * @static
    * @function
    * @memberOf module:AWSInfrastructure
    * @return {Promise}
+   * @see {@link: https://stackoverflow.com/questions/36419442/the-role-defined-for-the-function-cannot-be-assumed-by-lambda}
    * */
   static createRoleForServiceExecute () {
     logger.info('Will create role that have super user access right! You cna modify them in AWS console after role created.');
-    return iam.createRole({
-      AssumeRolePolicyDocument: AWS_CONFIG.IAM_ROLE_TRUST_RELATIONSHIP,
-      RoleName: AWS_CONFIG.IAM_ROLE_NAME
-    }).promise()
-      .then(() => {
-        return iam.attachRolePolicy({
-          PolicyArn: AWS_CONFIG.IAM_ROLE_POLICY,
-          RoleName: AWS_CONFIG.IAM_ROLE_NAME
-        }).promise();
-      });
+    return new Promise((resolve, reject) => {
+      iam.createRole({
+        AssumeRolePolicyDocument: AWS_CONFIG.IAM_ROLE_TRUST_RELATIONSHIP,
+        RoleName: AWS_CONFIG.IAM_ROLE_NAME
+      }).promise()
+        .then(() => {
+          return iam.attachRolePolicy({
+            PolicyArn: AWS_CONFIG.IAM_ROLE_POLICY,
+            RoleName: AWS_CONFIG.IAM_ROLE_NAME
+          }).promise().then((data) => {
+            logger.info('Will wait for 10s after complete create iam roles');
+            setTimeout(() => resolve(data), 10000);
+          });
+        }).catch((reject));
+    });
   }
 
   /**
@@ -66,8 +74,8 @@ class IAMConstructor {
             reject(new AlreadyExistError('IAM'));
             return;
           }
-          resolve();
         }
+        resolve();
       });
     });
   }

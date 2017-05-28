@@ -23,7 +23,8 @@ class DynamoDBConstruct {
    * @return {Promise}
    * */
   static construct () {
-    return DynamoDBConstruct.shouldCreateDynamoDBTable()
+    return DynamoDBConstruct
+      .shouldCreateDynamoDBTable()
       .then(DynamoDBConstruct.constructDynamoDB)
       .catch(PromiseHelper.handleError);
   }
@@ -74,10 +75,15 @@ class DynamoDBConstruct {
    * @return {Promise}
    * */
   static shouldCreateDynamoDBTable () {
-    return dynamodb.describeTable({
-      TableName: AWS_CONFIG.DYNAMO_DB_TABLE_NAME
-    }).promise()
-      .then(() => Promise.reject(new AlreadyExistError(`Dyanmo DB Table: ${AWS_CONFIG.DYNAMO_DB_TABLE_NAME} Already exist`)));
+    return new Promise((resolve, reject) => {
+      dynamodb.describeTable({
+        TableName: AWS_CONFIG.DYNAMO_DB_TABLE_NAME
+      }).promise()
+        .then(
+          () => reject(new AlreadyExistError(`Dynamo DB Table: ${AWS_CONFIG.DYNAMO_DB_TABLE_NAME} Already exist`)),
+          resolve
+        );
+    });
   }
 }
 

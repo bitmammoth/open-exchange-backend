@@ -36,7 +36,7 @@ class CloudWatchConstruct {
    * @return {Promise}
    * */
   static constructSchedulerOnCloudWatchEvent () {
-    logger.log('Will create night job schedule on cloud watch');
+    logger.info('Will create night job schedule on cloud watch');
     return cloudwatchevents.putRule({
       Name: AWS_CONFIG.CLOUD_WATCH_NIGHT_JOB_SCHEDULER_NAME,
       Description: 'Will trigger on HKT 4a.m',

@@ -1,6 +1,3 @@
-/**
- * Created by DavidNg on 15/5/2017.
- */
 'use strict';
 
 process.env.NODE_ENV = 'testing';
@@ -36,11 +33,11 @@ describe('Testing historical convert currency API', () => {
     let base = 'HKD';
     let target = 'JPY';
     let amount = 10;
-    getHistoricalCoversionRateBaseOn(base,target, startDate, endDate, amount)
+    getHistoricalCoversionRateBaseOn(base, target, startDate, endDate, amount)
       .end((_err, _res) => {
         _res.body.data.should.have.property('next_page_token');
         let page2Token = _res.body.data.next_page_token; // Token required to fetch page 2.
-        getHistoricalCoversionRateBaseOn(base, target,startDate, endDate, amount, page2Token)
+        getHistoricalCoversionRateBaseOn(base, target, startDate, endDate, amount, page2Token)
           .end((err, res) => {
             res.body.data.should.have.property('next_page_token');
             let page3Token = res.body.data.next_page_token;// Token required to fetch page 3.
