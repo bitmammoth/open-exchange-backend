@@ -141,14 +141,14 @@ class ExchangeRateCollection {
    * @return {Number}
    */
   rateForDate (date, currency) {
-    let rate = this.exchangeRate.filter((item) => {
+    let rate = this.exchangeRate.find((item) => {
       let matched = item.date === date && item.currency === currency;
       return matched;
     });
-    if (rate.length === 0) {
+    if (!rate) {
       throw new DBNoresultError();
     } else {
-      return rate[0].rate;
+      return rate.rate;
     }
   }
 
@@ -157,7 +157,7 @@ class ExchangeRateCollection {
    * @return {ExchangeRate}
    * */
   filterByCurrency (currency) {
-    let rateBuiler = new ExchangeRateCollectionBuilder();
+    let rateBuilder = new ExchangeRateCollectionBuilder();
     let targetCurrencyNotFound = this.allCurrency.indexOf(currency) < 0;
     if (targetCurrencyNotFound) {
       logger.error({rates: this._serizeledExchangeRates}, `${currency} not found!`);
@@ -165,9 +165,9 @@ class ExchangeRateCollection {
     }
     let targetRates = this.exchangeRate.filter((item) => item.currency === currency);
     for (let targetRate of targetRates) {
-      rateBuiler.addExchangeRateRecord(targetRate.date, targetRate.currency, targetRate.rate);
+      rateBuilder.addExchangeRateRecord(targetRate.date, targetRate.currency, targetRate.rate);
     }
-    let rate = rateBuiler.build();
+    let rate = rateBuilder.build();
     rate.nextPageToken = this.nextPageToken;
     return rate;
   }
@@ -195,7 +195,9 @@ class ExchangeRateCollection {
   serializeByCurrency (currency) {
     let result = {};
     this.exchangeRate.forEach((exchangeRate) => {
-      result[exchangeRate.date] = exchangeRate.rate;
+      if (exchangeRate.currency === currency) {
+        result[exchangeRate.date] = exchangeRate.rate;
+      }
     }, this);
     return result;
   }

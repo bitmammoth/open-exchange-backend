@@ -9,8 +9,6 @@ process.env.NODE_ENV = 'development';
 
 const logger = require('../../logger');
 const error = require('../../error');
-const PromiseHelper = require('../../helper/functional').PromiseHelper;
-const AsyncHelper = require('../../helper/functional').AsyncHelper;
 
 const IAM = require('./IAM');
 const CloudWatch = require('./CloudWatch');
@@ -35,11 +33,9 @@ if (require.main === module) {
 }
 
 function constructAWSEnvironment () {
-  let constructAWSJobs = [];
-  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(IAM.construct)());
-  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(CloudWatch.construct)());
-  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(Lambda.construct)());
-  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(DynamoDB.construct)());
-  constructAWSJobs.push(PromiseHelper.wrapPromiseWithCallback(APIGateWay.construct)());
-  return AsyncHelper.series(constructAWSJobs);
+  return IAM.construct()
+    .then(CloudWatch.construct)
+    .then(Lambda.construct)
+    .then(DynamoDB.construct)
+    .then(APIGateWay.construct);
 }

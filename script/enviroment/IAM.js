@@ -37,7 +37,7 @@ class IAMConstructor {
    * @function
    * @memberOf module:AWSInfrastructure
    * @return {Promise}
-   * @see {@link: https://stackoverflow.com/questions/36419442/the-role-defined-for-the-function-cannot-be-assumed-by-lambda}
+   * @see {@link https://stackoverflow.com/questions/36419442/the-role-defined-for-the-function-cannot-be-assumed-by-lambda}
    * */
   static createRoleForServiceExecute () {
     logger.info('Will create role that have super user access right! You cna modify them in AWS console after role created.');
@@ -51,8 +51,8 @@ class IAMConstructor {
             PolicyArn: AWS_CONFIG.IAM_ROLE_POLICY,
             RoleName: AWS_CONFIG.IAM_ROLE_NAME
           }).promise().then((data) => {
-            logger.info('Will wait for 10s after complete create iam roles');
-            setTimeout(() => resolve(data), 10000);
+            logger.info('Will wait for 30s after complete create iam roles');
+            setTimeout(() => resolve(data), 30000);
           });
         }).catch((reject));
     });

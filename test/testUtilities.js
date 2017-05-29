@@ -25,7 +25,7 @@ function promiseBeforeResolveWillSleep (second, id) {
   });
 }
 
-describe('Test PromiseHelper Helper', () => {
+describe('Test PromiseHelper', () => {
   it('Should executed by order', (done) => {
     let promisesJobs = [];
     promisesJobs.push(PromiseHelper.wrapPromiseWithCallback(promiseBeforeResolveWillSleep)(8, 1));
