@@ -229,7 +229,6 @@ aws: {
             www.js - Start node js server in localhost:3000
     /service - Logic for controller such as access db, invoke third party API ..etc.
         /exchangrate - API logic of exhcnage rate
-        /conversionrate - API logic of conversion rate
         /thirdparty - Logic for commiucate to open-exchange-rate
     /test
     .eslintrc.js - ESlint config
