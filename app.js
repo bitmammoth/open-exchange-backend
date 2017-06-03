@@ -6,10 +6,13 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const expressValidator = require('express-validator');
+const graphqlHTTP = require('express-graphql');
 
 require('./config');
+const schema = require('./model/schema');
 const controllers = require('./controller');
 const CustomResponse = require('./middleware/response');
+const queryResolver = require('./query');
 const app = express();
 
 // view engine setup, useless for API development
@@ -26,9 +29,23 @@ app.use(cookieParser());
 app.use(CustomResponse.json);
 
 // TODO: How to make better dummy api for test?
-app.use('^/$', (req, res)=> {
+app.use('^/$', (req, res) => {
   res.jsonForSuccessResponse({});
 });
+
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  rootValue: queryResolver,
+  graphql: true,
+  formatError: error => ({
+    message: error.message,
+    locations: error.locations,
+    stack: error.stack,
+    path: error.path
+  })
+})
+);
+
 app.use('/currency', controllers.currencyExchange);
 
 // catch 404 and forward to error handler
