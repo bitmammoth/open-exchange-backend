@@ -42,7 +42,7 @@ app.use('/graphql', graphqlExpress({
 })
 );
 
-app.use('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
+app.use('/graphiql', graphiqlExpress({endpointURL: 'graphql'}));
 
 app.use('/currency', controllers.currencyExchange);
 
