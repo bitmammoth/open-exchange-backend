@@ -244,10 +244,10 @@ class APIGatewayBuilder {
     return apigateway.createDeployment({
       restApiId: this.rootResource.restApiId,
       description: 'Initialize deployment',
-      stageName: 'test',
+      stageName: AWS_CONFIG.API_GATEWAY_API_STAGE_NAME,
       stageDescription: 'Testing environment'
     }).promise().then((data) => {
-      logger.info(`API deployed to https://${this.rootResource.restApiId}.execute-api.ap-northeast-1.amazonaws.com/test`);
+      logger.info(`API deployed to https://${this.rootResource.restApiId}.execute-api.ap-northeast-1.amazonaws.com/${AWS_CONFIG.API_GATEWAY_API_STAGE_NAME}`);
       return Promise.resolve(data);
     });
   }
