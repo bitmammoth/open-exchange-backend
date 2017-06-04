@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const expressValidator = require('express-validator');
-const graphqlHTTP = require('express-graphql');
+const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
 
 require('./config');
 const schema = require('./model/schema');
@@ -18,7 +18,9 @@ const app = express();
 // view engine setup, useless for API development
 app.set('view engine', 'jade');
 
-app.use(cors());
+app.use(cors({
+  optionsSuccessStatus: 200
+}));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,15 +30,9 @@ app.use(expressValidator({}));
 app.use(cookieParser());
 app.use(CustomResponse.json);
 
-// TODO: How to make better dummy api for test?
-app.use('^/$', (req, res) => {
-  res.jsonForSuccessResponse({});
-});
-
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql', graphqlExpress({
   schema: schema,
   rootValue: queryResolver,
-  graphql: true,
   formatError: error => ({
     message: error.message,
     locations: error.locations,
@@ -45,6 +41,8 @@ app.use('/graphql', graphqlHTTP({
   })
 })
 );
+
+app.use('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
 
 app.use('/currency', controllers.currencyExchange);
 

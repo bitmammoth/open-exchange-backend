@@ -98,6 +98,15 @@ describe('Testing GraphQL pagination', () => {
   });
 });
 
+describe('Testing GraphQL AJAX', () => {
+  it('Test pre-flight', (done) => {
+    preflightGraphalAPI().end((err, res) => {
+      res.status.should.be.equal(200);
+      done();
+    });
+  });
+});
+
 /**
  * @param {String} currency
  * @param {String} startDate
@@ -246,4 +255,10 @@ function getLeastConversionRateBaseOn (baseCurrency, toCurrency, amount) {
       }
     }
   );
+}
+
+function preflightGraphalAPI () {
+  return chai.request(app).options('/graphql')
+    .set('Access-Control-Request-Headers', 'content-type')
+    .send();
 }
